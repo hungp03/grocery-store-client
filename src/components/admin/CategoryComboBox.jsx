@@ -1,0 +1,40 @@
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { Select } from 'antd';
+
+const { Option } = Select;
+
+const CategoryComboBox = ({ onSelectCategory, search }) => {
+    const { categories } = useSelector((state) => state.app);
+    const [selectedCategory, setSelectedCategory] = useState('');
+
+    const handleChange = (value) => {
+        setSelectedCategory(value);
+
+        const selectedCategory = categories.find(category => category.id === parseInt(value));
+        if (onSelectCategory) {
+            onSelectCategory(selectedCategory);
+        }
+    };
+
+    return (
+        <div className="w-full">
+            <Select
+                value={selectedCategory}
+                onChange={handleChange}
+                className={`w-full rounded-md ${search ? 'text-sm' : ''}`}
+                placeholder="Chọn phân loại"
+                size={search ? 'small' : 'middle'}
+            >
+                <Option value="" disabled>Chọn phân loại</Option>
+                {categories?.map((category) => (
+                    <Option key={category.id} value={category.id}>
+                        {category.name}
+                    </Option>
+                ))}
+            </Select>
+        </div>
+    );
+};
+
+export default CategoryComboBox;

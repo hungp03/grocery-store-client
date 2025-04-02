@@ -1,0 +1,15 @@
+export const RESPONSE_STATUS = {
+    SUCCESS: 200,
+    CREATED: 201,
+    BAD_REQUEST: 400,
+    UNAUTHORIZED: 401,
+    FORBIDDEN: 403,
+    NOT_FOUND: 404,
+    SERVER_ERROR: 500,
+
+    //Custom status code
+    RESOURCE_INVALID: -5,
+    USER_NOT_FOUND: -6,
+    DUPLICATE: -7
+  };
+  
