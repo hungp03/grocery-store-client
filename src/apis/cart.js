@@ -27,9 +27,7 @@ export const apiAddOrUpdateCart = async (pid, quantity) => {
         url: '/cart',
         method: 'post',
         data: {
-            id: {
-                productId: pid
-            },
+            productId: pid,
             quantity: quantity
         }
     })

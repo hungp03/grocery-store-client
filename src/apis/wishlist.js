@@ -4,9 +4,7 @@ export const apiAddWishList = async (pid) => {
         url: '/wishlist',
         method: 'post',
         data: {
-            id: {
-                productId: pid
-            }
+            productId: pid
         }
     })
 }
