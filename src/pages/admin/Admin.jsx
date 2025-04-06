@@ -1,25 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import path from "@/utils/path";
-
 import { Overview, Feedback, OrderDetail, EditCategory, EditProduct, Category, Order, Product, User, AddCategory, AddProduct } from './index';
 import { useSelector } from "react-redux";
 import { useRef } from 'react';
 import { AdminLayout } from "@/components/admin";
-
+import { jwtDecode } from "jwt-decode";
 const Admin = () => {
-  const { isLoggedIn, current } = useSelector(state => state.user);
-  const [shouldNavigate, setShouldNavigate] = useState(false);
-  const [toLogin, setToLogin] = useState(false)
+  const { isLoggedIn, token } = useSelector(state => state.user);
+  const [unauthorized, setUnauthorized] = useState(false)
   const isMounted = useRef(false);
   const lastMount = async () => {
     try {
       if (isMounted.current) {
-        if (!current || !isLoggedIn) {
-          setToLogin(true);
+        if (!token || !isLoggedIn) {
+          setUnauthorized(true);
         }
-        if (current.role.roleName.toLowerCase() !== 'admin') {
-          setShouldNavigate(true);
+        else {
+          const decoded = jwtDecode(token);
+          if (!decoded.authorities.includes("ROLE_ADMIN")) {
+            setUnauthorized(true);
+          }
         }
       }
     } catch (error) {
@@ -28,18 +29,16 @@ const Admin = () => {
   };
 
   useEffect(() => {
-    isMounted.current = true; // Đánh dấu rằng component đã mounted
+    isMounted.current = true;
     lastMount();
 
     return () => {
-      isMounted.current = false; // Đánh dấu rằng component đã unmounted
+      isMounted.current = false;
     };
-  }, [isMounted]); // Chạy một lần khi component mount
-  if (toLogin) {
-    return <Navigate to={`/login`} replace={true} />;
-  }
-  if (shouldNavigate) {
-    return <Navigate to={`/`} replace={true} />;
+  }, [isMounted]);
+
+  if (unauthorized) {
+    return <Navigate to={`/${path.UNAUTHORIZED}`} replace={true} />;
   }
 
   return (

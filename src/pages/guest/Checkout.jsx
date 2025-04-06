@@ -78,10 +78,7 @@ const Checkout = () => {
                     window.location.reload();
                 }, delay);
             } else {
-                message.error(response?.data?.error, {
-                    hideProgressBar: false,
-                    autoClose: delay,
-                });
+                message.error(response?.message || "Có lỗi xảy ra trong quá trình đặt hàng");
             }
         }
     };

@@ -16,7 +16,6 @@ const Header = ({ navigate }) => {
   const hideSearch = location.pathname.includes('/admin');
   const { current } = useSelector(state => state.user)
   const [isShowOption, setIsShowOption] = useState(false)
-  //console.log(current);
   useEffect(() => {
     const handleClickOutOption = (e) => {
       const profile = document.getElementById('profile')
@@ -37,17 +36,13 @@ const Header = ({ navigate }) => {
       {!hideSearch && <SearchBar />}
       <div className="ml-auto flex">
         <div
-          className="relative cursor-pointer hover:underline flex items-center justify-center gap-2 px-5"
+          className="relative cursor-pointer flex items-center justify-center gap-2 px-5"
           onClick={() => navigate(`/${path.CART}`)}
         >
-
           <FaCartShopping color="#10B981" size={25} />
-
-          {current?.cartLength > 0 && (
-            <span className="absolute -top-1 -right-1 bg-main text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-              {current.cartLength}
+            <span className="rounded-full flex items-center justify-center">
+              Giỏ hàng
             </span>
-          )}
         </div>
 
 

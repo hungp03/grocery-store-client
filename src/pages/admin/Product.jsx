@@ -2,14 +2,13 @@ import React, { useState, useEffect } from "react";
 import { apiGetProducts, apiDeleteProduct } from "@/apis";
 import { MdDelete, MdModeEdit } from "react-icons/md";
 import { useSelector } from "react-redux";
-import {useSearchParams,useNavigate,createSearchParams} from "react-router-dom";
+import { useSearchParams, useNavigate, createSearchParams } from "react-router-dom";
 import { AddButton, SearchProduct, CategoryComboBox } from "@/components/admin";
 import { Table, Modal, Button, message } from "antd";
 import product_default from "@/assets/product_default.png";
 import { SortItem } from "@/components";
 import { sortProductOption } from "@/utils/constants";
 import { RESPONSE_STATUS } from "@/utils/responseStatus";
-import { ca } from "date-fns/locale";
 
 const PAGE_SIZE = 10;
 
@@ -167,7 +166,7 @@ const Product = () => {
         <img
           src={
             record.imageUrl
-              || product_default
+            || product_default
           }
           alt={record.product_name || "Product Image"}
           style={{ width: "90px", height: "70px", objectFit: "cover" }}

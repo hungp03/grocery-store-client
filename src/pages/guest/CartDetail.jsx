@@ -8,6 +8,7 @@ import { getCurrentUser } from '@/store/user/asyncActions';
 import withBaseComponent from '@/hocs/withBaseComponent';
 import path from '@/utils/path';
 import { RESPONSE_STATUS } from "@/utils/responseStatus";
+import { ca } from 'date-fns/locale';
 
 const DEBOUNCE_DELAY = 500;
 const DELETE_DELAY = 500;
@@ -28,7 +29,7 @@ const Cart = ({ dispatch }) => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [total, setTotal] = useState(0)
   // Refs
   const debounceTimeouts = useRef({});
   const pendingChanges = useRef({});
@@ -54,6 +55,7 @@ const Cart = ({ dispatch }) => {
     }
     if (response.statusCode === RESPONSE_STATUS.SUCCESS) {
       const products = response.data.result;
+      setTotal(response?.data?.meta?.total)
       setCartItems((prevItems) => {
         const updatedItems = pageToFetch === 1 ? products : [...prevItems, ...products];
         return updatedItems;
@@ -277,7 +279,7 @@ const Cart = ({ dispatch }) => {
 
   return (
     <div className="w-main mt-10 p-6 bg-white shadow-md rounded-lg">
-      <h2 className="text-xl font-semibold mb-4">Giỏ hàng</h2>
+      <h2 className="text-xl font-semibold mb-4">Giỏ hàng ({total})</h2>
 
       {cartItems?.length > 0 ? (
         <div className="space-y-4">
@@ -308,8 +310,6 @@ const Cart = ({ dispatch }) => {
             onCheckout={handleCheckout}
             pendingUpdates={pendingUpdates}
             loadingDeletes={loadingDeletes}
-            currentCartLength={current?.cartLength}
-            cartItemsLength={cartItems.length}
           />
         </div>
       ) : (
