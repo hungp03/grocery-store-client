@@ -12,8 +12,6 @@ const CartFooter = ({
   onCheckout,
   pendingUpdates,
   loadingDeletes,
-  currentCartLength,
-  cartItemsLength
 }) => {
   return (
     <div className="mt-4 space-y-4">
@@ -68,12 +66,9 @@ const CartFooter = ({
           </button>
         </div>
       </div>
-
-      {currentCartLength !== cartItemsLength && (
         <div className="text-sm text-gray-500 text-center">
           * Một số sản phẩm có thể không hiển thị do đã hết hàng hoặc đã bị xóa
         </div>
-      )}
     </div>
   );
 };

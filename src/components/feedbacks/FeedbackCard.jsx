@@ -22,8 +22,7 @@ const FeedbackCard = ({ data, onClose }) => {
                     <FaX className="w-6 h-6" />
                 </button>
                 <div className="flex items-center justify-start mb-6 w-full">
-                    <img src={data?.userAvatarUrl ?
-                         `${import.meta.env.VITE_BACKEND_TARGET}/storage/avatar/${data?.userAvatarUrl}`: avatar
+                    <img src={data?.userAvatarUrl || avatar
                     } alt={data?.userName} className="w-16 h-16 rounded-full border-2 border-primary shadow-md object-cover" />
                     <div className="ml-4">
                     <h2 className="text-2xl font-bold text-primary">{data?.userName}</h2>

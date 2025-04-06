@@ -11,7 +11,8 @@ const path = {
   CHECKOUT: "checkout",
   PAYMENT_SUCCESS: "payment-success",
   PAYMENT_FAILURE: "payment-failure",
-
+  ERROR: "error",
+  UNAUTHORIZED: "unauthorized",
   // Member path
   MEMBER: "member",
   PERSONAL: "personal",

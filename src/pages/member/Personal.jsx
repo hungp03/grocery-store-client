@@ -4,9 +4,10 @@ import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { UploadOutlined, UserOutlined, PhoneOutlined, MailOutlined, HomeOutlined } from '@ant-design/icons';
 import avatar from "@/assets/avatarDefault.png";
-import { apiUpdateCurrentUser, getUserById } from "@/apis";
+import { apiGetCurrentUser, apiUpdateCurrentUser, getUserById } from "@/apis";
 import { getCurrentUser } from "@/store/user/asyncActions";
 import { RESPONSE_STATUS } from "@/utils/responseStatus";
+import { el } from "date-fns/locale";
 const { Title } = Typography;
 
 const Personal = () => {
@@ -17,17 +18,22 @@ const Personal = () => {
     const [previewImage, setPreviewImage] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
 
-    const fetchUserByCurrentId = async () => {
+    const fetchCurrentUser = async () => {
         try {
-            const response = await getUserById(current?.id);
-            setUser(response.data);
+            const response = await apiGetCurrentUser();
+            if (response.statusCode === RESPONSE_STATUS.SUCCESS) {
+                setUser(response.data);
+            }
+            else {
+                message.error("Có lỗi khi lấy thông tin người dùng");
+            }
         } catch (error) {
             console.error("Error fetching user:", error);
         }
     };
 
     useEffect(() => {
-        fetchUserByCurrentId();
+        fetchCurrentUser();
     }, [current]);
 
     useEffect(() => {
@@ -247,12 +253,6 @@ const Personal = () => {
                         <span className="text-gray-600 mr-2">Trạng thái:</span>
                         <Tag color={user?.status === 0 ? "error" : "success"}>
                             {user?.status === 0 ? "Block" : "Active"}
-                        </Tag>
-                    </div>
-                    <div>
-                        <span className="text-gray-600 mr-2">Vai trò:</span>
-                        <Tag color={current?.role?.id === 1 ? "blue" : "green"}>
-                            {current?.role?.id === 1 ? "Admin" : "User"}
                         </Tag>
                     </div>
                 </div>
