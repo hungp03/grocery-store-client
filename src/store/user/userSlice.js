@@ -19,13 +19,14 @@ export const userSlice = createSlice({
             state.isLoggedIn = false;
             state.token = null;
             state.current = null;
-            state.message = ''; // Không hiển thị thông báo khi đăng xuất
+            state.message = '';
         },
         clearMessage: (state) => {
             state.message = '';
         },
         setExpiredMessage: (state) => {
-            state.message = 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại'; // Hiển thị thông báo khi token hết hạn
+            // Hiển thị thông báo khi token hết hạn hoặc không hợp lệ
+            state.message = 'Phiên đăng nhập đã hết hạn hoặc không hợp lệ. Vui lòng đăng nhập lại'; 
         }
     },
     extraReducers: (builder) => {

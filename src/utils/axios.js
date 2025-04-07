@@ -161,7 +161,9 @@ axiosInstance.interceptors.response.use(
     // handle lỗi 401 (Unauthorized) - Token hết hạn
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      if (!store.getState().user.isLoggedIn) {
+      // Không thấy người dùng hợp lệ, xóa token
+      if (!store.getState().user.isLoggedIn || !store.getState().user.current) {
+        localStorage.removeItem('persist:ogani_shop/user');
         return Promise.reject(error);
       }
 
@@ -174,10 +176,12 @@ axiosInstance.interceptors.response.use(
           return axios(originalRequest).then(response => response.data);
         }
       } catch (err) {
+        // Nếu refresh token thất bại, xóa token và dispatch action
+        localStorage.removeItem('persist:ogani_shop/user');
+        store.dispatch(setExpiredMessage());
         console.error('Failed to refresh token:', err);
       }
     }
-
     return error.response?.data || Promise.reject(error);
   }
 );
