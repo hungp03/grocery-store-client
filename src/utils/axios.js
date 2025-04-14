@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { setExpiredMessage, login } from '@/store/user/userSlice';
 import { store } from '@/store/redux';
-import {jwtDecode} from 'jwt-decode';
 
 // Create a singleton promise to handle token refresh
 let refreshTokenPromise = null;
@@ -14,17 +13,6 @@ const axiosInstance = axios.create({
   },
   timeout: 30000,
 });
-
-const isTokenExpired = (token) => {
-  if (!token) return true;
-  try {
-    const decoded = jwtDecode(token);
-    return decoded.exp < (Date.now() / 1000) - 60;
-  } catch (e) {
-    return true;
-  }
-};
-
 
 const getLocalToken = () => {
   try {
