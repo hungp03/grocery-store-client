@@ -121,22 +121,8 @@ const refreshAccessToken = async () => {
   }
 };
 
-// Trước khi gửi request - kiểm tra và refresh token
 axiosInstance.interceptors.request.use(async function (config) {
-  // Bỏ qua request refresh token để tránh vòng lặp vô hạn
-  if (config.url === '/auth/refresh') {
-    return config;
-  }
-
   let token = getLocalToken();
-  
-  if (token && isTokenExpired(token) && store.getState().user.isLoggedIn) {
-    try {
-      token = await refreshAccessToken();
-    } catch (error) {
-      console.error('Failed to refresh token before request:', error);
-    }
-  }
   
   if (token) {
     config.headers.authorization = `Bearer ${token}`;
