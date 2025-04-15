@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { Button, Form, Input, Tabs, Divider, message, Typography } from "antd"
 import { LockIcon, ShieldIcon, AlertTriangleIcon } from "lucide-react"

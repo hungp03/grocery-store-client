@@ -145,10 +145,15 @@ const Login = () => {
           </Button>
 
           {!isRegister && (
-            <GoogleLogin
+              <GoogleLogin
               onSuccess={responseGoogle}
-              onFailure={(response) => console.log(response)}
-              className="mt-4 w-full"
+              onError={() => console.log('Login Failed')}
+              useOneTap={false}
+              width="100%"
+              theme="outline"
+              size="large"
+              shape="rect"
+              logo_alignment="left"
             />
           )}
 
