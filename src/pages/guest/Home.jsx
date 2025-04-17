@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Banner, Sidebar, FeatureProduct } from "@/components";
 import { useSelector } from 'react-redux';
-import { ScaleLoader } from 'react-spinners';
 
 const Home = () => {
     const { isLoggedIn } = useSelector(state => state.user);
     const [showRecommendation, setShowRecommendation] = useState(false);
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (isLoggedIn) {
             const timer = setTimeout(() => {
                 setShowRecommendation(true);
-                setLoading(false);
             }, 1500);
 
             return () => clearTimeout(timer);
@@ -35,13 +32,7 @@ const Home = () => {
 
             {isLoggedIn && (
                 <div className="my-8">
-                    {loading ? (
-                        <div className="flex justify-center items-center">
-                            <ScaleLoader color="#36d7b7" loading={loading} size={50} />
-                        </div>
-                    ) : (
-                        <FeatureProduct flag="recommendation" />
-                    )}
+                    <FeatureProduct flag="recommendation" />
                 </div>
             )}
         </>

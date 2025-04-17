@@ -56,23 +56,21 @@ export const apiGetRatingsPage = async (pid, params) =>
         params,
     });
 
-export const apiCreateProduct = async (product) => {
-    const res = await axiosInstance({
+export const apiCreateProduct = async (product) => 
+ axiosInstance({
         url: `/products`,
         method: 'post',
         data: product,
     })
-    return res;
-}
 
-export const apiUpdateProduct2 = async (product) => {
-    const res = await axiosInstance({
+
+export const apiUpdateProduct2 = async (product) => 
+    axiosInstance({
         url: `/products`,
         method: 'put',
         data: product,
     })
-    return res
-}
+ 
 
 // Lấy danh sách orders
 export const apiGetOrders = async (params) =>

@@ -13,20 +13,18 @@ export const apiDeleteCategory = async (cid) =>
     });
 
 
-export const apiCreateCategory = async(category)=>{
-    const res = await axiosInstance({
+export const apiCreateCategory = async(category)=>
+    axiosInstance({
         url : `/categories`,
         method:'post',
         data:category,
     })
-    return res
-}
 
-export const apiUpdateCategory = async(category)=>{
-    const res = await axiosInstance({
+
+export const apiUpdateCategory = async(category)=>
+   axiosInstance({
         url : `/categories`,
         method:'put',
         data:category,
     })
-    return res
-}
+    

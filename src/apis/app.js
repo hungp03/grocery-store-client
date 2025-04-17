@@ -14,10 +14,8 @@ export const apiGetCategories = (params) =>
     });
 
 export const apiUploadImage = async (image,folder)=>{
-    // Tạo một đối tượng FormData
     const formData = new FormData();
 
-    // Chỉ thêm file vào FormData nếu nó không rỗng
     if (image) {
         formData.append('file', image);
         formData.append('folder', folder);
@@ -28,7 +26,7 @@ export const apiUploadImage = async (image,folder)=>{
             method: "post",
             data: formData,
             headers: {
-                'Content-Type': 'multipart/form-data', // Thiết lập header cho multipart/form-data
+                'Content-Type': 'multipart/form-data',
             },
         });
         return res;

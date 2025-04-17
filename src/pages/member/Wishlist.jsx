@@ -3,8 +3,9 @@ import { Pagination } from '@/components';
 import { apiDeleteWishlist, apiGetWishlist } from '@/apis';
 import { message } from 'antd';
 import { useSelector } from 'react-redux';
-import {WishlistItem} from '@/components';
+import { WishlistItem } from '@/components';
 import { RESPONSE_STATUS } from "@/utils/responseStatus";
+import { PulseLoader } from 'react-spinners';
 const PAGE_SIZE = 5;
 const DELETE_DELAY = 500;
 
@@ -14,6 +15,7 @@ const Wishlist = () => {
     const [pages, setPages] = useState(1);
     const [loadingDeletes, setLoadingDeletes] = useState(new Set());
     const debounceTimeouts = useRef({});
+    const [loading, setLoading] = useState(false);
 
     const handlePagination = (page = 1) => {
         setPages(page);
@@ -30,12 +32,14 @@ const Wishlist = () => {
     };
 
     const fetchWishlistItems = async (page = 1) => {
-        try {
-            const response = await apiGetWishlist(page, PAGE_SIZE);
+        setLoading(true);
+        const response = await apiGetWishlist(page, PAGE_SIZE);
+        if (response.statusCode === RESPONSE_STATUS.SUCCESS) {
             setWishlist(response?.data);
-        } catch (error) {
-            console.error('Lỗi khi lấy dữ liệu wishlist:', error);
+        } else {
+            message.error("Có lỗi xảy ra khi tải dữ liệu");
         }
+        setLoading(false);
     };
 
     useEffect(() => {
@@ -73,7 +77,12 @@ const Wishlist = () => {
         <div className='w-full relative px-4'>
             <header className="text-xl font-semibold py-4 mb-5 border-b">Wishlist</header>
             <div className="w-4/5 mx-auto py-8 flex flex-col gap-4">
-                {wishlist?.result?.length > 0 ? (
+            {loading ? (
+                <div className="flex justify-center items-center min-h-[50vh] h-full">
+                    <PulseLoader color="#36d7b7" loading={loading} size={20} />
+                </div>
+            ) : (
+                wishlist?.result?.length > 0 ? (
                     <div className="space-y-2">
                         {wishlist?.result.map(item => (
                             <WishlistItem
@@ -88,7 +97,8 @@ const Wishlist = () => {
                     <div className='flex flex-col justify-center items-center min-h-[70vh]'>
                         <p className="text-gray-500">Wishlist của bạn đang trống.</p>
                     </div>
-                )}
+                )
+            )}
             </div>
             {wishlist?.meta?.pages > 1 && (
                 <div className='w-4/5 m-auto my-4 flex justify-center'>
