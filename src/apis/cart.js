@@ -1,29 +1,29 @@
 import axiosInstance from '@/utils/axios';
 // Lấy các sản phẩm được chọn trong cart
-export const apiGetSelectedCart = async (pids) => {
-    return axiosInstance({
+export const apiGetSelectedCart = async (pids) => 
+    axiosInstance({
         url: `cart/product-selected?productIds=${pids?.join(',')}`,
         method: 'get',
     });
-};
 
-export const apiDeleteCart = async (pid) => {
-    return axiosInstance({
+
+export const apiDeleteCart = async (pid) => 
+    axiosInstance({
         url: `/cart/${pid}`,
         method: 'delete'
     })
-}
 
-export const apiGetCart = async (page, size) => {
-    return axiosInstance({
+
+export const apiGetCart = async (page, size) => 
+    axiosInstance({
         url: '/cart',
         method: 'get',
         params: { page, size }
     })
-}
 
-export const apiAddOrUpdateCart = async (pid, quantity) => {
-    return axiosInstance({
+
+export const apiAddOrUpdateCart = async (pid, quantity) => 
+    axiosInstance({
         url: '/cart',
         method: 'post',
         data: {
@@ -31,4 +31,3 @@ export const apiAddOrUpdateCart = async (pid, quantity) => {
             quantity: quantity
         }
     })
-}

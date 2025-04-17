@@ -4,49 +4,32 @@ import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { UploadOutlined, UserOutlined, PhoneOutlined, MailOutlined, HomeOutlined } from '@ant-design/icons';
 import avatar from "@/assets/avatarDefault.png";
-import { apiGetCurrentUser, apiUpdateCurrentUser, getUserById } from "@/apis";
+import { apiUploadImage, apiUpdateCurrentUser } from "@/apis";
 import { getCurrentUser } from "@/store/user/asyncActions";
 import { RESPONSE_STATUS } from "@/utils/responseStatus";
-import { el } from "date-fns/locale";
 const { Title } = Typography;
-
 const Personal = () => {
     const { control, handleSubmit, formState: { errors, isDirty }, reset } = useForm();
     const { current } = useSelector(state => state.user);
+    console.log(current)
     const dispatch = useDispatch();
     const [user, setUser] = useState();
     const [previewImage, setPreviewImage] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
 
-    const fetchCurrentUser = async () => {
-        try {
-            const response = await apiGetCurrentUser();
-            if (response.statusCode === RESPONSE_STATUS.SUCCESS) {
-                setUser(response.data);
-            }
-            else {
-                message.error("Có lỗi khi lấy thông tin người dùng");
-            }
-        } catch (error) {
-            console.error("Error fetching user:", error);
-        }
-    };
-
     useEffect(() => {
-        fetchCurrentUser();
-    }, [current]);
-
-    useEffect(() => {
-        if (user) {
+        if (current) {
+            setUser(current);
             reset({
-                name: user?.name,
-                email: user?.email,
-                avatarUrl: user?.avatarUrl,
-                phone: user?.phone,
-                address: user?.address,
+                name: current?.name,
+                email: current?.email,
+                avatarUrl: current?.avatarUrl,
+                phone: current?.phone,
+                address: current?.address,
             });
         }
-    }, [user, reset]);
+    }, [current, reset]);
+    
 
     const beforeUpload = (file) => {
         const isImage = file.type.startsWith('image/');
@@ -86,35 +69,39 @@ const Personal = () => {
     };
 
     const handleUpdateInfo = async (data) => {
-        const formData = new FormData();
-
-        // Thêm ảnh đại diện nếu có
+        let avatarUrl = user?.avatarUrl;
+    
         if (selectedFile) {
-            formData.append('avatarUrl', selectedFile);
+            // Upload ảnh trước
+            const uploadRes = await apiUploadImage(selectedFile);
+            if (uploadRes && uploadRes.statusCode === RESPONSE_STATUS.SUCCESS) {
+                avatarUrl = uploadRes.data?.fileName; // tuỳ theo API trả về
+            } else {
+                message.error("Tải ảnh lên thất bại");
+                return;
+            }
         }
-
-        const userData = { ...data };
-        // Tránh gửi field trùng lặp
-        delete userData.avatarUrl;
-        // Nếu email không cần cập nhật => xóa field email
-        delete userData.email;
-
-        formData.append("user", new Blob([JSON.stringify(userData)], { type: "application/json" }));
-
-        const response = await apiUpdateCurrentUser(formData);
-        const delay = 2000;
-
+    
+        const userData = {
+            name: data.name,
+            phone: data.phone,
+            address: data.address,
+            avatarUrl: avatarUrl, // dùng cái đã upload xong
+        };
+    
+        const response = await apiUpdateCurrentUser(userData); // không dùng FormData ở đây nữa
+    
         if (response.statusCode === RESPONSE_STATUS.SUCCESS) {
             message.success("Cập nhật thành công");
-            setTimeout(() => {
-                dispatch(getCurrentUser());
-                setPreviewImage(null);
-                setSelectedFile(null);
-            }, delay);
+            dispatch(getCurrentUser());
+            setPreviewImage(null);
+            setSelectedFile(null);
         } else {
             message.error(response.message);
         }
     };
+    
+    
 
 
     const currentAvatar = user?.avatarUrl || avatar;

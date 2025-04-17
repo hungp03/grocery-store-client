@@ -14,29 +14,27 @@ import { RESPONSE_STATUS } from "@/utils/responseStatus";
 
 const Feedback = ({ navigate, location }) => {
     const { isLoggedIn } = useSelector(state => state.user);
-    const [paginate, setPaginate] = useState(null);
-    const [feedbacksPage, setFeedbacksPage] = useState(null);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [paramPage, SetParamPage] = useState();
     const dispatch = useDispatch();
     const { current } = useSelector(state => state.user);
     const [params, setParams] = useSearchParams();
- 
-    const fetchRatings = async (page = 1, safParam = {}) => {
-        const { status, sort } = safParam;
-        
-        // Build API parameters
-        const params = { page };
-        if (status !== "default") {
-            params.status = status;
-        }
-        if (sort !== "default" && sort !== "product_name") {
-            params.sort = sort;
-        }
-        const response = await apiGetAllRatingsPage(params);
+
+    // Extract params
+    const pageParam = Number(params.get('page')) || 1;
+    const sortParam = params.get('sort') || '';
+    const statusParam = params.get('status') || '';
+    const [feedbacksPage, setFeedbacksPage] = useState([]);
+    const [paginate, setPaginate] = useState({});
+    const [loading, setLoading] = useState(false);
+
+    const fetchRatings = async (page, sort, status) => {
+        setLoading(true);
+        const apiParams = { page };
+        if (status && status !== 'default') apiParams.status = status;
+        if (sort && sort !== 'default' && sort !== 'product_name') apiParams.sort = sort;
+        const response = await apiGetAllRatingsPage(apiParams);
         if (response.statusCode === RESPONSE_STATUS.SUCCESS) {
             let feedbacksList = response.data?.result;
-            if (sort === "product_name") {
+            if (sort === 'product_name') {
                 feedbacksList = feedbacksList.sort((a, b) => {
                     if (a.product_name < b.product_name) return 1;
                     if (a.product_name > b.product_name) return -1;
@@ -45,27 +43,35 @@ const Feedback = ({ navigate, location }) => {
             }
             setFeedbacksPage(feedbacksList);
             setPaginate(response.data?.meta);
-            setCurrentPage(page);
         }
+        else {
+            message.error("Có lỗi xảy ra khi tải dữ liệu đánh giá");
+        }
+        setLoading(false);
     };
+
     useEffect(() => {
         if (current) {
-            fetchRatings(currentPage, paramPage);
+            fetchRatings(pageParam, sortParam, statusParam);
         }
-    }, [current, currentPage]);
-
-    useEffect(() => {
-        const pr = Object.fromEntries([...params]);
-        SetParamPage(pr);
-        fetchRatings(1, pr);
-    }, [params]);
+    }, [current, pageParam, sortParam, statusParam]);
 
     const handleChangeSortValue = (value) => {
-        setParams({ ...Object.fromEntries([...params]), sort: value });
+        setParams(prev => {
+            const obj = Object.fromEntries([...params]);
+            obj.sort = value;
+            obj.page = 1;
+            return obj;
+        });
     };
 
     const handleChangeStatusValue = (value) => {
-        setParams({ ...Object.fromEntries([...params]), status: value });
+        setParams(prev => {
+            const obj = Object.fromEntries([...params]);
+            obj.status = value;
+            obj.page = 1;
+            return obj;
+        });
     };
 
     const handleViewDetail = (id) => {
@@ -113,7 +119,7 @@ const Feedback = ({ navigate, location }) => {
         { title: 'Sản phẩm', dataIndex: 'product_name', key: 'product_name' },
         { title: 'Người dùng', dataIndex: 'userName', key: 'userName' },
         { title: 'Đánh giá', dataIndex: 'ratingStar', key: 'ratingStar', align: 'center', render: (rating) => `${rating} ★` },
-        { title: 'Mô tả', dataIndex: 'description', key: 'description', render: (text) => text.length > 50 ? `${text.substring(0, 50)}...` : text },
+        { title: 'Mô tả', dataIndex: 'description', key: 'description', render: (text) => (text && text.length > 50 ? `${text.substring(0, 50)}...` : (text || "")) },
         { title: 'Thời gian cập nhật', dataIndex: 'updatedAt', key: 'updatedAt', align: 'right', render: (date) => new Date(date).toLocaleString("vi-VN") },
         {
             title: 'Xem chi tiết',
@@ -157,10 +163,17 @@ const Feedback = ({ navigate, location }) => {
                 dataSource={feedbacksPage}
                 columns={columns}
                 rowKey="id"
+                loading={loading}
                 pagination={{
-                    current: currentPage,
+                    current: pageParam,
                     pageSize: paginate?.pageSize,
-                    onChange: (page) => setCurrentPage(page),
+                    onChange: (page) => {
+                        setParams(prev => {
+                            const obj = Object.fromEntries([...params]);
+                            obj.page = page;
+                            return obj;
+                        });
+                    },
                     total: paginate?.total,
                 }}
             />

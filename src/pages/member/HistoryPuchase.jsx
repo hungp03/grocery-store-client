@@ -21,10 +21,12 @@ const History = ({ navigate, location }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [paramPage, SetParamPage] = useState();
     const [params] = useSearchParams();
+    const [loading, setLoading] = useState(false);
     const dispatch = useDispatch();
     const status = watch("status");
 
-    const fectOrders = async (page, status = {}) => {
+    const fetchOrders = async (page, status = {}) => {
+        setLoading(true);
         let response;
         if (status?.status === "default" || status?.status === undefined) {
             response = await apiGetOrders({ page });
@@ -36,18 +38,19 @@ const History = ({ navigate, location }) => {
             setCurrentPage(page);
         }
         setOrdersPage(response?.data?.result);
+        setLoading(false);
     };
 
     useEffect(() => {
         if (current) {
-            fectOrders(currentPage, paramPage);
+            fetchOrders(currentPage, paramPage);
         }
     }, [current, currentPage]);
 
     useEffect(() => {
         const pr = Object.fromEntries([...params]);
         SetParamPage(pr);
-        fectOrders(1, pr);
+        fetchOrders(1, pr);
     }, [params]);
 
     const handleChangeStatusValue = (value) => {
@@ -157,6 +160,7 @@ const History = ({ navigate, location }) => {
                 <Table
                     columns={columns}
                     dataSource={ordersPage}
+                    loading={loading}
                     rowKey={(record) => record.id}
                     pagination={{
                         current: currentPage,

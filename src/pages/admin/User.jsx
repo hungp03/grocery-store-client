@@ -4,7 +4,8 @@ import { useSelector } from "react-redux";
 import { useNavigate, useSearchParams, createSearchParams } from "react-router-dom";
 import { apiGetAllUser, apiSetStatusUser } from "@/apis";
 import avatarDefault from "@/assets/avatarDefault.png";
-import { FaS } from "react-icons/fa6";
+import { RESPONSE_STATUS } from "@/utils/responseStatus";
+
 const PAGE_SIZE = 10;
 const User = () => {
   const { current } = useSelector((state) => state.user);
@@ -17,15 +18,16 @@ const User = () => {
 
   const fetchUsers = async (queries) => {
     setLoading(true);
-    try {
       const res = await apiGetAllUser(queries);
-      setUsers(res?.data?.result || []);
-      setTotalPage(res?.data?.meta.total)
-    } catch (error) {
-      message.error("Có lỗi xảy ra khi tải dữ liệu người dùng");
-    } finally {
+      if (res.statusCode === RESPONSE_STATUS.SUCCESS)
+      {
+        setUsers(res?.data?.result);
+        setTotalPage(res?.data?.meta.total)
+      }
+      else {
+        message.error("Có lỗi xảy ra khi tải dữ liệu người dùng");
+      }
       setLoading(false);
-    }
   };
 
   useEffect(() => {

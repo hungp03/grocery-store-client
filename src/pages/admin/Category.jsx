@@ -15,12 +15,21 @@ const Category = () => {
   const [params] = useSearchParams();
   const [currentPage, setCurrentPage] = useState(Number(params.get('page')) || 1);
   const [categories, setCategories] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [deleteCategoryId, setDeleteCategoryId] = useState(null);
   const [deleteMessageContent, setDeleteMessageContent] = useState('');
 
   const fetchCategories = async (queries) => {
-    const response = await apiGetCategories(queries);
-    setCategories(response);
+    setLoading(true);
+      const response = await apiGetCategories(queries);
+      if (response.statusCode === RESPONSE_STATUS.SUCCESS){
+        setCategories(response);
+      }
+      else {
+        message.error("Có lỗi xảy ra khi lấy dữ liệu")
+      }
+      setLoading(false);
+    
   };
 
   useEffect(() => {
@@ -110,6 +119,7 @@ const Category = () => {
           dataSource={categories?.data?.result}
           columns={columns}
           rowKey="id"
+          loading={loading}
           pagination={{
             current: currentPage,
             pageSize: PAGE_SIZE,

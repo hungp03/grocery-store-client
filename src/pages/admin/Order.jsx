@@ -17,11 +17,18 @@ const Order = () => {
   const ORDER_PER_PAGE = 12;
   const [orderMeta, setOrderMeta] = useState(null)
   const status = params.get("status")
+  const [loading, setLoading] = useState(false);
 
   const fetchOrders = async (queries) => {
+    setLoading(true);
     const res = await apiGetAllOrders(queries);
-    setOrders(res.data?.result);
-    setOrderMeta(res.data?.meta)
+    if (res.statusCode === RESPONSE_STATUS.SUCCESS) {
+      setOrders(res.data?.result);
+      setOrderMeta(res.data?.meta)
+    } else {
+      message.error("Có lỗi xảy ra khi tải dữ liệu đơn hàng");
+    }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -40,13 +47,13 @@ const Order = () => {
       size: ORDER_PER_PAGE,
       filter: []
     };
-  
+
     if (status) {
       queries.filter.push(`status=${status}`);
     }
-  
+
     fetchOrders(queries);
-  
+
     const params = {};
     if (status) params.status = status;
     params.page = page;
@@ -54,7 +61,7 @@ const Order = () => {
       search: createSearchParams(params).toString(),
     });
   };
-  
+
 
   const handleChangeStatusOrder = (value) => {
     setCurrentPage(1);
@@ -95,26 +102,26 @@ const Order = () => {
       const res = await apiUpdateOrderStatus(orderId, newStatus);
       if (res.statusCode === RESPONSE_STATUS.SUCCESS) {
         message.success("Cập nhật trạng thái đơn hàng thành công!", 2);
-  
+
         const queries = {
           page: currentPage,
           size: ORDER_PER_PAGE,
           filter: []
         };
-        
+
         if (status) {
           queries.filter.push(`status=${status}`);
         }
-  
+
         fetchOrders(queries);
-  
+
         const params = {};
         if (status) params.status = status;
         params.page = currentPage;
         navigate({
           search: createSearchParams(params).toString(),
         });
-  
+
       } else {
         throw new Error("Cập nhật trạng thái thất bại");
       }
@@ -122,7 +129,7 @@ const Order = () => {
       message.error("Có lỗi xảy ra: " + err.message, 2);
     }
   };
-  
+
 
   const statusMenuItems = (order) => {
     const items = [];
@@ -217,6 +224,7 @@ const Order = () => {
         columns={columns}
         dataSource={orders}
         rowKey="id"
+        loading={loading}
         pagination={{
           current: currentPage,
           pageSize: ORDER_PER_PAGE,
