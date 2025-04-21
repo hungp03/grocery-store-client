@@ -1,57 +1,18 @@
 import axiosInstance from "@/utils/axios";
-export const apiGetAllOrders = async (params = {}) => {
-    const defaultParams = {
-        sort: "id,desc",
-        ...params,
-    };
 
-    return axiosInstance({
-        url: "/all-orders",
-        method: "get",
-        params: defaultParams,
-        paramsSerializer: {
-            encode: (value) => value,
-            serialize: (params) => {
-                return Object.entries(params)
-                    .map(([key, value]) => `${key}=${value}`)
-                    .join('&');
-            }
-        }
-    });
-};
 
 export const apiGetOrderDetail = async (oid) =>
     axiosInstance({
-        url: `/order-detail/${oid}`,
+        url: `/order/${oid}/detail`,
         method: "get",
     })
 export const apiGetOrderInfor = async (oid) =>
     axiosInstance({
-        url: `/order-info/${oid}`,
+        url: `/orders/${oid}/info`,
         method: "get",
     })
 
-export const apiGetMonthlyRevenue = async (month, year) =>
-    axiosInstance({
-        url: `monthly-orders-revenue`,
-        method: `get`,
-        params: {
-            month: month,
-            year: year
-        }
-    })
 
-export const apiUpdateOrderStatus = async (orderId, status) =>
-    axiosInstance({
-        url: `update-order-status/${orderId}`,
-        params: { status: status },
-        method: 'put'
-    })
-
-export const apiGetSummary = async () =>
-    axiosInstance({
-        url: `admin/summary`,
-    })
 
 export const apiPaymentVNPay = async (params) =>
     axiosInstance({
@@ -71,7 +32,7 @@ export const apiCreateOrder = async (data) => {
     };
 
     return axiosInstance({
-        url: `/checkout`,
+        url: `/orders/checkout`,
         method: 'post',
         data: requestBody,
         headers: {
@@ -79,3 +40,17 @@ export const apiCreateOrder = async (data) => {
         }
     });
 }
+
+export const apiUpdateOrderStatus = async (orderId, status) =>
+    axiosInstance({
+        url: `orders/${orderId}/status`,
+        data: { status: status },
+        method: 'patch'
+    })
+
+export const apiGetMyOrders = async (params) =>
+    axiosInstance({
+        url: `/orders/me`,
+        method: "get",
+        params
+    });

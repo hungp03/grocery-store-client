@@ -2,7 +2,7 @@ import axiosInstance from '@/utils/axios';
 // Lấy các sản phẩm được chọn trong cart
 export const apiGetSelectedCart = async (pids) => 
     axiosInstance({
-        url: `cart/product-selected?productIds=${pids?.join(',')}`,
+        url: `cart/selected?productIds=${pids?.join(',')}`,
         method: 'get',
     });
 

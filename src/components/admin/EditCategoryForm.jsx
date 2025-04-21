@@ -5,60 +5,61 @@ import { apiUploadImage, apiUpdateCategory } from "@/apis"
 import category_default from "@/assets/category_default.png"
 import { RESPONSE_STATUS } from "@/utils/responseStatus"
 
-function EditCategoryForm({ initialCategoryData }) {
+function EditCategoryForm({ initialData }) {
   const [form] = Form.useForm()
   const [categoryImage, setCategoryImage] = useState(null)
   const [previewCategoryImage, setPreviewCategoryImage] = useState(
-    initialCategoryData?.imageUrl || category_default,
+    initialData?.imageUrl || category_default,
   )
   const [uploading, setUploading] = useState(false)
 
+  const uploadImage = async (categoryImage) => {
+    if (!categoryImage) {
+      return null;
+    }
+
+    const resUpLoad = await apiUploadImage(categoryImage, "category");
+    if (resUpLoad?.statusCode === RESPONSE_STATUS.BAD_REQUEST) {
+      message.error(resUpLoad.message || "Lỗi khi tải lên hình ảnh");
+      return null;
+    }
+
+    return resUpLoad?.data?.fileName || initialData?.imageUrl;
+  };
+
   const handleUpdateCategory = async (values) => {
-    setUploading(true)
+    setUploading(true);
 
     const categoryToUpdate = {
-      id: initialCategoryData.id,
       name: values.name,
-      imageUrl: initialCategoryData?.imageUrl,
+      imageUrl: initialData?.imageUrl,
+    };
+
+    // Cập nhật hình ảnh nếu có
+    const uploadedImageUrl = await uploadImage(categoryImage);
+
+    // Nếu không có ảnh mới, giữ nguyên ảnh cũ
+    if (uploadedImageUrl !== null) {
+      categoryToUpdate.imageUrl = uploadedImageUrl;
     }
 
     try {
-      // Xử lý upload hình ảnh nếu có
-      if (categoryImage) {
-        try {
-          const resUpLoad = await apiUploadImage(categoryImage, "category")
-          if (resUpLoad?.statusCode === RESPONSE_STATUS.BAD_REQUEST) {
-            throw new Error(resUpLoad.message || "Lỗi khi tải lên hình ảnh")
-          }
-          categoryToUpdate.imageUrl = resUpLoad?.data?.fileName || initialCategoryData?.imageUrl
-        } catch (uploadError) {
-          message.error("Lỗi khi tải lên hình ảnh: " + uploadError.message)
-          setUploading(false)
-          return // Dừng quá trình cập nhật nếu upload thất bại
-        }
-      }
+      const res = await apiUpdateCategory(initialData.id, categoryToUpdate);
 
-      // Cập nhật thông tin phân loại
-      const res = await apiUpdateCategory(categoryToUpdate)
       if (res.statusCode === RESPONSE_STATUS.SUCCESS) {
-        message.success("Sửa phân loại thành công!")
+        message.success("Sửa phân loại thành công!");
+      } else {
+        message.error(res.message || "Có lỗi xảy ra khi cập nhật phân loại.");
       }
-      else {
-        message.error(res.message || "Có lỗi xảy ra khi cập nhật phân loại.")
-      }
-    } catch (err) {
-      message.error("Có lỗi xảy ra: " + err.message)
     } finally {
-      setUploading(false)
+      setUploading(false);
     }
-  }
+  };
 
   const handleImageChange = (info) => {
     // Xử lý khi người dùng chọn file
     if (info.file) {
-      // Trong Ant Design Upload, file có thể nằm ở info.file hoặc info.file.originFileObj
       const file = info.file.originFileObj || info.file
-
       if (file instanceof File) {
         // Tạo preview cho hình ảnh
         const reader = new FileReader()
@@ -66,8 +67,6 @@ function EditCategoryForm({ initialCategoryData }) {
           setPreviewCategoryImage(reader.result)
         }
         reader.readAsDataURL(file)
-
-        // Lưu file để upload sau
         setCategoryImage(file)
       } else {
         console.error("Invalid file object:", file)
@@ -105,8 +104,8 @@ function EditCategoryForm({ initialCategoryData }) {
         layout="vertical"
         onFinish={handleUpdateCategory}
         initialValues={{
-          id: initialCategoryData?.id,
-          name: initialCategoryData?.name,
+          id: initialData?.id,
+          name: initialData?.name,
         }}
       >
         <Form.Item

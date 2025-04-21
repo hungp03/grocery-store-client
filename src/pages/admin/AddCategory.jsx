@@ -13,68 +13,54 @@ const AddCategory = () => {
   const [uploading, setUploading] = useState(false)
 
   const handleCreateCategory = async (values) => {
-    setUploading(true)
-
-    const categoryToCreate = {
-      name: values.name,
-    }
+    setUploading(true);
 
     try {
-      // Tạo phân loại mới
-      const response = await apiCreateCategory(categoryToCreate)
-      if (response.statusCode === RESPONSE_STATUS.DUPLICATE) {
-        throw new Error("Phân loại đã tồn tại trong hệ thống")
-      } else if (response.statusCode !== RESPONSE_STATUS.CREATED && response.statusCode !== RESPONSE_STATUS.SUCCESS) {
-        throw new Error("Có lỗi xảy ra khi tạo phân loại")
-      }
-
-      // Upload ảnh nếu có
+      let imageUrl = undefined;
       if (categoryImage) {
         try {
-          const resUpload = await apiUploadImage(categoryImage, "category")
+          const resUpload = await apiUploadImage(categoryImage, "category");
           if (resUpload?.statusCode === RESPONSE_STATUS.BAD_REQUEST) {
-            throw new Error(resUpload.message || "Lỗi khi tải lên hình ảnh")
+            throw new Error(resUpload.message || "Lỗi khi tải lên hình ảnh");
           }
-
-          // Cập nhật phân loại với hình ảnh mới
-          categoryToCreate.id = response.data.id
-          categoryToCreate.imageUrl = resUpload?.data?.fileName
-
-          const updateResponse = await apiUpdateCategory(categoryToCreate)
-          if (updateResponse.statusCode !== RESPONSE_STATUS.SUCCESS) {
-            throw new Error("Đã tạo phân loại nhưng không thể cập nhật hình ảnh")
-          }
+          imageUrl = resUpload?.data?.fileName;
         } catch (uploadError) {
-          // Vẫn hiển thị thông báo thành công vì phân loại đã được tạo
-          message.warning("Đã tạo phân loại nhưng có lỗi khi tải lên hình ảnh: " + uploadError.message)
-          setUploading(false)
-          // Reset form và state
-          form.resetFields()
-          setCategoryImage(null)
-          setPreviewCategoryImage(null)
-          return
+          message.error("Lỗi khi tải lên hình ảnh: " + uploadError.message);
+          setUploading(false);
+          return;
         }
       }
 
-      message.success("Thêm phân loại thành công!")
+      // Tạo object phân loại với URL ảnh nếu có
+      const categoryToCreate = {
+        name: values.name,
+        ...(imageUrl ? { imageUrl } : {}),
+      };
+
+      const response = await apiCreateCategory(categoryToCreate);
+      if (response.statusCode === RESPONSE_STATUS.DUPLICATE) {
+        throw new Error("Phân loại đã tồn tại trong hệ thống");
+      } else if (
+        response.statusCode !== RESPONSE_STATUS.CREATED &&
+        response.statusCode !== RESPONSE_STATUS.SUCCESS
+      ) {
+        throw new Error("Có lỗi xảy ra khi tạo phân loại");
+      }
+
+      message.success("Thêm phân loại thành công!");
 
       // Reset form và state
-      form.resetFields()
-      setCategoryImage(null)
-      setPreviewCategoryImage(null)
-    } catch (err) {
-      message.error(err.message)
+      form.resetFields();
+      setCategoryImage(null);
+      setPreviewCategoryImage(null);
     } finally {
-      setUploading(false)
+      setUploading(false);
     }
   }
 
   const handleImageChange = (info) => {
-    // Xử lý khi người dùng chọn file
     if (info.file) {
-      // Trong Ant Design Upload, file có thể nằm ở info.file hoặc info.file.originFileObj
       const file = info.file.originFileObj || info.file
-
       if (file instanceof File) {
         // Tạo preview cho hình ảnh
         const reader = new FileReader()

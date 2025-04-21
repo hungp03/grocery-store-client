@@ -76,7 +76,7 @@ const refreshAccessToken = async () => {
     isTokenRefreshing = true;
     
     // Tạo promise mới
-    refreshTokenPromise = axios.get(
+    refreshTokenPromise = axios.post(
       `${import.meta.env.VITE_BACKEND_URL}/auth/refresh`, 
       {
         headers: { 'Content-Type': 'application/json' },

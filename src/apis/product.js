@@ -51,7 +51,7 @@ export const apiRatings = async (data) =>
 
 export const apiGetRatingsPage = async (pid, params) =>
     axiosInstance({
-        url: `/product/ratings/${pid}`,
+        url: `/product/${pid}/ratings`,
         method: "get",
         params,
     });
@@ -64,56 +64,13 @@ export const apiCreateProduct = async (product) =>
     })
 
 
-export const apiUpdateProduct2 = async (product) => 
+export const apiUpdateProduct2 = async (id, product) => 
     axiosInstance({
-        url: `/products`,
+        url: `/products/${id}`,
         method: 'put',
         data: product,
     })
  
 
-// Lấy danh sách orders
-export const apiGetOrders = async (params) =>
-    axiosInstance({
-        url: `/orders`,
-        method: "get",
-        params
-    });
 
-export const apiGetAllRatingsPage = async (params) =>
-    axiosInstance({
-        url: `/ratings`,
-        method: "get",
-        params
-    });
-export const apiChangeRatingStatus = async (id) =>
-    axiosInstance({
-        url: `ratings/${id}`,
-        method: "put",
-    })
 
-export const apiFetchRecommendProductById = async (id) =>
-    axiosInstance({
-        url: `products/similar/${id}`,
-        method: "get",
-    })
-
-export const apiFetchRecommendSearchProduct = async (word, page, pagesize) =>
-    axiosInstance({
-        url: `search-recommended/${word}`,
-        method: "get",
-        params: { page, pagesize }
-    })
-
-export const apiRecommendProductForUser = async () =>
-    axiosInstance({
-        url: 'recommend-product',
-        method: "get",
-    })
-
-export const apiExportExcel = async () =>
-    axiosInstance({
-        url: `products/exportExcel`,
-        method: "get",
-        responseType: 'blob'
-    })
