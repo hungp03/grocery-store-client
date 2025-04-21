@@ -19,7 +19,6 @@ const Wishlist = () => {
 
     const handlePagination = (page = 1) => {
         setPages(page);
-        fetchWishlistItems(page);
     };
 
     const deleteProductInWishlist = async (pid) => {
@@ -49,7 +48,7 @@ const Wishlist = () => {
         return () => {
             Object.values(debounceTimeouts.current).forEach(timeout => clearTimeout(timeout));
         };
-    }, [isLoggedIn, pages]);
+    }, [isLoggedIn, current, pages]);
 
     const removeItem = (pid) => {
         setLoadingDeletes(prev => new Set(prev).add(pid));
@@ -77,28 +76,28 @@ const Wishlist = () => {
         <div className='w-full relative px-4'>
             <header className="text-xl font-semibold py-4 mb-5 border-b">Wishlist</header>
             <div className="w-4/5 mx-auto py-8 flex flex-col gap-4">
-            {loading ? (
-                <div className="flex justify-center items-center min-h-[50vh] h-full">
-                    <PulseLoader color="#36d7b7" loading={loading} size={20} />
-                </div>
-            ) : (
-                wishlist?.result?.length > 0 ? (
-                    <div className="space-y-2">
-                        {wishlist?.result.map(item => (
-                            <WishlistItem
-                                key={item.id}
-                                item={item}
-                                loadingDeletes={loadingDeletes}
-                                removeItem={removeItem}
-                            />
-                        ))}
+                {loading ? (
+                    <div className="flex justify-center items-center min-h-[50vh] h-full">
+                        <PulseLoader color="#36d7b7" loading={loading} size={20} />
                     </div>
                 ) : (
-                    <div className='flex flex-col justify-center items-center min-h-[70vh]'>
-                        <p className="text-gray-500">Wishlist của bạn đang trống.</p>
-                    </div>
-                )
-            )}
+                    wishlist?.result?.length > 0 ? (
+                        <div className="space-y-2">
+                            {wishlist?.result.map(item => (
+                                <WishlistItem
+                                    key={item.id}
+                                    item={item}
+                                    loadingDeletes={loadingDeletes}
+                                    removeItem={removeItem}
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className='flex flex-col justify-center items-center min-h-[70vh]'>
+                            <p className="text-gray-500">Wishlist của bạn đang trống.</p>
+                        </div>
+                    )
+                )}
             </div>
             {wishlist?.meta?.pages > 1 && (
                 <div className='w-4/5 m-auto my-4 flex justify-center'>

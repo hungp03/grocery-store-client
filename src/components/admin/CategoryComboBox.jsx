@@ -10,10 +10,16 @@ const CategoryComboBox = ({ onSelectCategory, search }) => {
 
     const handleChange = (value) => {
         setSelectedCategory(value);
-
         const selectedCategory = categories.find(category => category.id === parseInt(value));
         if (onSelectCategory) {
             onSelectCategory(selectedCategory);
+        }
+    };
+
+    const handleClear = () => {
+        setSelectedCategory('');
+        if (onSelectCategory) {
+            onSelectCategory(null);
         }
     };
 
@@ -22,11 +28,13 @@ const CategoryComboBox = ({ onSelectCategory, search }) => {
             <Select
                 value={selectedCategory}
                 onChange={handleChange}
+                onClear={handleClear}
                 className={`w-full rounded-md ${search ? 'text-sm' : ''}`}
                 placeholder="Chọn phân loại"
                 size={search ? 'small' : 'middle'}
+                allowClear
             >
-                <Option value="" disabled>Chọn phân loại</Option>
+                <Option value="">Tất cả phân loại</Option>
                 {categories?.map((category) => (
                     <Option key={category.id} value={category.id}>
                         {category.name}

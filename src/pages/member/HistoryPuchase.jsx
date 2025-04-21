@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Table, Select, Button, Modal, Typography, Space, Tag, Tooltip, message } from "antd";
+import { Table, Select, Button, Typography, Space, Tag, Tooltip } from "antd";
 import { useForm } from "react-hook-form";
-import { apiGetOrders, apiGetOrderDetail } from "@/apis";
+import { apiGetMyOrders } from "@/apis";
 import { useDispatch, useSelector } from "react-redux";
 import { createSearchParams, useSearchParams } from "react-router-dom";
 import { statusOrder } from "@/utils/constants";
@@ -19,7 +19,6 @@ const History = ({ navigate, location }) => {
     const [paginate, setPaginate] = useState(null);
     const [ordersPage, setOrdersPage] = useState();
     const [currentPage, setCurrentPage] = useState(1);
-    const [paramPage, SetParamPage] = useState();
     const [params] = useSearchParams();
     const [loading, setLoading] = useState(false);
     const dispatch = useDispatch();
@@ -29,29 +28,22 @@ const History = ({ navigate, location }) => {
         setLoading(true);
         let response;
         if (status?.status === "default" || status?.status === undefined) {
-            response = await apiGetOrders({ page });
-            setPaginate(response.data?.meta);
-            setCurrentPage(page);
+            response = await apiGetMyOrders({ page });
         } else if (!isNaN(+status?.status)) {
-            response = await apiGetOrders({ page, status: status?.status });
-            setPaginate(response.data?.meta);
-            setCurrentPage(page);
+            response = await apiGetMyOrders({ page, status: status?.status });
         }
+        setPaginate(response.data?.meta);
+        setCurrentPage(page);
         setOrdersPage(response?.data?.result);
         setLoading(false);
     };
 
     useEffect(() => {
         if (current) {
-            fetchOrders(currentPage, paramPage);
+            const pr = Object.fromEntries([...params]);
+            fetchOrders(currentPage, pr);
         }
-    }, [current, currentPage]);
-
-    useEffect(() => {
-        const pr = Object.fromEntries([...params]);
-        SetParamPage(pr);
-        fetchOrders(1, pr);
-    }, [params]);
+    }, [current, currentPage, params]);
 
     const handleChangeStatusValue = (value) => {
         const currentParams = Object.fromEntries(params.entries());
@@ -79,8 +71,6 @@ const History = ({ navigate, location }) => {
         }
     };
 
-
-
     const updateOrderStatus = (orderId, newStatus) => {
         const updatedOrders = ordersPage.map(order =>
             order.orderId === orderId ? { ...order, status: newStatus } : order
@@ -90,7 +80,6 @@ const History = ({ navigate, location }) => {
 
     const handleTableChange = (pagination) => {
         setCurrentPage(pagination.current);
-        fectOrders(pagination.current, paramPage);
     };
 
     const columns = [
@@ -150,8 +139,8 @@ const History = ({ navigate, location }) => {
                         placeholder="Chọn trạng thái"
                     >
                         {statusOrder.map((item) => (
-    <Option key={item.value} value={item.value}>{item.label}</Option>
-))}
+                            <Option key={item.value} value={item.value}>{item.label}</Option>
+                        ))}
                     </Select>
                 </Space>
             </div>

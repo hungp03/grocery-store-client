@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { apiGetSummary, apiGetMonthlyRevenue } from "@/apis";
+import { apiGetOverview, apiGetMonthlyRevenue } from "@/apis";
 import { RevenueChart } from "@/components/admin";
 import { Spin } from "antd";
 import { RESPONSE_STATUS } from "@/utils/responseStatus";
@@ -34,7 +34,7 @@ const Overview = () => {
   const fetchSummary = async () => {
     setLoading(true);
     try {
-      const res = await apiGetSummary();
+      const res = await apiGetOverview();
       if (res.statusCode === RESPONSE_STATUS.SUCCESS) {
         setTotalProfit(res?.data[0]);
         setTotalUser(res?.data[1]);

@@ -45,7 +45,7 @@ const User = () => {
       title: `Xác nhận thay đổi trạng thái cho người dùng ${user.name}?`,
       onOk: async () => {
         try {
-          await apiSetStatusUser({ ...user, status: newStatus });
+          await apiSetStatusUser(user.id, newStatus);
           setUsers((prevUsers) =>
             prevUsers.map((u) => (u.id === user.id ? { ...u, status: newStatus } : u))
           );

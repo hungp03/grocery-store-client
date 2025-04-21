@@ -5,7 +5,6 @@ import { useSelector } from "react-redux";
 import { apiUploadImage, apiUpdateProduct2 } from "@/apis"
 import product_default from "@/assets/product_default.png"
 import { RESPONSE_STATUS } from "@/utils/responseStatus";
-import { ca } from "date-fns/locale";
 
 const { TextArea } = Input
 
@@ -35,6 +34,7 @@ const EditProductForm = ({ initialProductData }) => {
         rating: initialProductData?.rating,
         unit: initialProductData?.unit,
         sold: initialProductData?.sold,
+        category: initialProductData?.category
       })
     }
   }, [initialProductData, form])
@@ -43,14 +43,13 @@ const EditProductForm = ({ initialProductData }) => {
     setUploading(true)
 
     const productToUpdate = {
-      id: initialProductData?.id,
       productName: values.productName,
       price: values.price,
       imageUrl: initialProductData?.imageUrl,
       quantity: values.quantity,
       description: values.description,
       unit: values.unit,
-      category: { id: values.categoryId },
+      ...(values.categoryId ? { category: { id: values.categoryId } } : {})
     }
     
     console.log("productToUpdate", productToUpdate)
@@ -71,7 +70,7 @@ const EditProductForm = ({ initialProductData }) => {
     }
 
     // Cập nhật thông tin sản phẩm
-    const resUpdate = await apiUpdateProduct2(productToUpdate)
+    const resUpdate = await apiUpdateProduct2(initialProductData?.id,productToUpdate)
 
     if (resUpdate.statusCode == RESPONSE_STATUS.SUCCESS) {
       // Cập nhật state local với dữ liệu mới

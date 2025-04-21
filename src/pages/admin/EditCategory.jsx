@@ -26,7 +26,7 @@ function EditCategory() {
       <div>
         <BackButton turnBackPage="/admin/category" header="Quay lại" />
       </div>
-      <EditCategoryForm initialCategoryData={category} />
+      <EditCategoryForm initialData={category} />
     </div>
   )
 }

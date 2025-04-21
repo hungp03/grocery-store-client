@@ -18,7 +18,7 @@ export const apiLogin = async (data) =>
 
 export const apiLoginGoogle = async (data) => {
   return axiosInstance({
-    url: "/auth/signin/google",
+    url: "/auth/google-login",
     method: "post",
     data,
     withCredentials: true,
@@ -27,7 +27,7 @@ export const apiLoginGoogle = async (data) => {
 
 export const apiGetCurrentUser = async () =>
   axiosInstance({
-    url: "/auth/account",
+    url: "/auth/me",
     method: "get",
   });
 
@@ -41,7 +41,7 @@ export const apiForgotPassword = async (data) =>
 export const apiResetPassword = async (data) =>
   axiosInstance({
     url: "/auth/reset-password",
-    method: "put",
+    method: "post",
     params: {
       token: data.token,
     },
@@ -53,7 +53,7 @@ export const apiResetPassword = async (data) =>
 
 export const apiVerifyOtp = async (email, otp) =>
   axiosInstance({
-    url: "auth/validate-otp",
+    url: "auth/otp/verify",
     method: "post",
     data: {
       email: email,
@@ -85,14 +85,8 @@ export const getUserById = async (id) =>
   });
 
 export const apiUpdatePassword = async (data) =>
-  axiosInstance({ url: "/users/update-password", method: "put", data });
+  axiosInstance({ url: "/users/password", method: "patch", data });
 
-export const apiSetStatusUser = async (user) => 
-   axiosInstance({
-    url: "/users/status",
-    method: "put",
-    data: user,
-  });
 
 export const apiGetLoggedInDevices = async () =>
   axiosInstance({
@@ -103,7 +97,7 @@ export const apiGetLoggedInDevices = async () =>
 
 export const apiRequestDeactivateAccount = async () =>
   axiosInstance({
-    url: "/deactivate/account",
+    url: "/deactivate/request",
     method: "post",
   });
 
