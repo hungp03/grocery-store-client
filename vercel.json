@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://grocery-store-backend-5fcf.onrender.com/api/v2/$1"
+      "destination": "https://grocery-store-backend-jmfi.onrender.com/api/v2/$1"
     },
     {
       "source": "/(.*)",
