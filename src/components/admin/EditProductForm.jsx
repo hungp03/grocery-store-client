@@ -10,7 +10,6 @@ const { TextArea } = Input
 
 const EditProductForm = ({ initialProductData }) => {
   const categories = useSelector((state) => state.app.categories);
-  console.log(categories)
   const [form] = Form.useForm()
   const [productData, setProductData] = useState(initialProductData)
   const [productImage, setProductImage] = useState(null)
@@ -51,8 +50,6 @@ const EditProductForm = ({ initialProductData }) => {
       unit: values.unit,
       ...(values.categoryId ? { category: { id: values.categoryId } } : {})
     }
-    
-    console.log("productToUpdate", productToUpdate)
 
     // Xử lý upload hình ảnh nếu có
     if (productImage) {

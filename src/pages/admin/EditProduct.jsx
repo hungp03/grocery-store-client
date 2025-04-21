@@ -13,7 +13,6 @@ function EditProduct() {
       const res = await apiGetProduct(pid);
       if (res.data) {
         setProduct(res.data);
-        console.log(res.data)
       } else {
         throw new Error("Không tìm thấy sản phẩm.");
       }

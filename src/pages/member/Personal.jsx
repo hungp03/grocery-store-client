@@ -11,7 +11,6 @@ const { Title } = Typography;
 const Personal = () => {
     const { control, handleSubmit, formState: { errors, isDirty }, reset } = useForm();
     const { current } = useSelector(state => state.user);
-    console.log(current)
     const dispatch = useDispatch();
     const [user, setUser] = useState();
     const [previewImage, setPreviewImage] = useState(null);

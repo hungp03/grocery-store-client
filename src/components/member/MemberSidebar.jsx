@@ -9,7 +9,6 @@ const MemberSidebar = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { current } = useSelector(state => state.user);
-    console.log(current)
     const handleMenuClick = ({ key }) => {
         navigate(key);
     };

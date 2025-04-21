@@ -86,7 +86,6 @@ const Checkout = () => {
         if (current && selectedItems) {
             fetchCart()
             fetchUserByCurrentId()
-            //console.log(cart)
         }
     }, [current])
 
