@@ -1,12 +1,12 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://grocery-store-backend-jmfi.onrender.com/api/v2/$1"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/"
+      "source": "/api/:path*",
+      "destination": "https://grocery-store-backend-jmfi.onrender.com/api/v2/:path*"
     }
-  ]
+  ],
+  "fallback": {
+    "source": "/:path*",
+    "destination": "/index.html"
+  }
 }
