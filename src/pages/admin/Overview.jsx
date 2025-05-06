@@ -84,7 +84,7 @@ const Overview = () => {
       <div className="flex-1 p-6 bg-white">
         {loading ? (
           <div className="flex w-main justify-center items-center h-96">
-            <Spin size="large" tip="Đang tải dữ liệu..." />
+            <Spin size="large"/>
           </div>
         ) : (
           <>

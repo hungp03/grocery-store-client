@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import payment from '@/assets/payment/payment.svg';
-import { apiCreateOrder, apiGetSelectedCart, apiPaymentVNPay, getUserById } from "@/apis";
+import { apiCreateOrder, apiGetSelectedCart, apiPaymentVNPay, apiGetCurrentUser } from "@/apis";
 import { Button, InputForm } from "@/components";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -29,7 +29,7 @@ const Checkout = () => {
     }
     const fetchUserByCurrentId = async () => {
         try {
-            const response = await getUserById(current?.id);
+            const response = await apiGetCurrentUser();
             setUser(response.data);
         } catch (error) {
             console.error("Error fetching avatar:", error);
@@ -56,7 +56,6 @@ const Checkout = () => {
             const orderData = btoa(encodeURIComponent(JSON.stringify(requestBody)));
             const vnpayRes = await apiPaymentVNPay({
                 amount: requestBody.totalPrice,
-                bankCode: import.meta.env.VITE_VNPAY_BANK_CODE,
                 orderData: orderData
             });
 

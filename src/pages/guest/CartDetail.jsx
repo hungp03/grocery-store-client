@@ -104,11 +104,11 @@ const Cart = ({ dispatch }) => {
     } else {
       const newSelectedItems = new Set(
         cartItems
-          .filter(item => (item.stock > 0 && item.stock >= item.quantity))
+          .filter(item => (item.stock > 0 && item.stock >= item.quantity && item.isActive))
           .map(item => item.id)
       );
       setSelectedItems(newSelectedItems);
-      setAllSelectedItems(cartItems.filter(item => item.stock > 0 && item.stock >= item.quantity));
+      setAllSelectedItems(cartItems.filter(item => item.stock > 0 && item.stock >= item.quantity && item.isActive));
     }
     setIsAllSelected(!isAllSelected);
   };
@@ -135,11 +135,8 @@ const Cart = ({ dispatch }) => {
       )
     );
 
-    // Track pending changes
     const currentPendingChange = pendingChanges.current[pid] || 0;
     pendingChanges.current[pid] = currentPendingChange + quantityDifference;
-
-    // Clear existing timeout
     if (debounceTimeouts.current[pid]) {
       clearTimeout(debounceTimeouts.current[pid]);
     }
@@ -182,7 +179,6 @@ const Cart = ({ dispatch }) => {
   };
 
   const removeItem = (pid) => {
-    // Kiểm tra nếu có bất kỳ cập nhật nào đang pending
     if (pendingUpdates.size > 0) return;
 
     setLoadingDeletes(prev => new Set(prev).add(pid));
@@ -268,7 +264,7 @@ const Cart = ({ dispatch }) => {
 
   useEffect(() => {
     const validItems = cartItems.filter(item => (
-      item.stock > 0 && item.stock >= item.quantity
+      item.stock > 0 && item.stock >= item.quantity && item.isActive
     ));
     setIsAllSelected(
       selectedItems.size === validItems.length &&
@@ -279,7 +275,7 @@ const Cart = ({ dispatch }) => {
 
   return (
     <div className="w-main mt-10 p-6 bg-white shadow-md rounded-lg min-h-[30vh]">
-      <h2 className="text-xl font-semibold mb-4">Giỏ hàng ({total})</h2>
+      <h2 className="text-xl font-semibold mb-4">Giỏ hàng</h2>
 
       {isLoading ? (
         <div className="flex justify-center items-center min-h-[20vh]">

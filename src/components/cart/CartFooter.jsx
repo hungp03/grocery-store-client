@@ -67,7 +67,7 @@ const CartFooter = ({
         </div>
       </div>
         <div className="text-sm text-gray-500 text-center">
-          * Một số sản phẩm có thể không hiển thị do đã hết hàng hoặc đã bị xóa
+          * Một số sản phẩm có thể không hiển thị do đã hết hàng hoặc đã ngừng kinh doanh.
         </div>
     </div>
   );

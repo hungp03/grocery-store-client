@@ -25,7 +25,7 @@ const ProductNotFound = () => {
                 </div>
                 <h2 className="text-2xl font-bold text-gray-800">Không tìm thấy sản phẩm</h2>
                 <p className="text-gray-600 text-center max-w-md">
-                    Sản phẩm không tồn tại hoặc đã bị xóa. Vui lòng quay lại sau hoặc tìm kiếm sản phẩm khác.
+                    Sản phẩm không tồn tại hoặc đã ngừng kinh doanh. Vui lòng quay lại sau hoặc tìm kiếm sản phẩm khác.
                 </p>
                 <div className="flex gap-4 mt-2">
                     <Button handleOnClick={() => navigate("/")}>Về trang chủ</Button>
