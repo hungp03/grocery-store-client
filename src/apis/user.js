@@ -16,14 +16,13 @@ export const apiLogin = async (data) =>
     withCredentials: true,
   });
 
-export const apiLoginGoogle = async (data) => {
-  return axiosInstance({
+export const apiLoginGoogle = async (data) => 
+  axiosInstance({
     url: "/auth/google-login",
     method: "post",
     data,
     withCredentials: true,
   });
-};
 
 export const apiGetCurrentUser = async () =>
   axiosInstance({

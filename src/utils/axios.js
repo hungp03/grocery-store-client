@@ -62,27 +62,25 @@ const refreshAccessToken = async () => {
           }
         }, 100);
         
-        // Timeout sau 5 giây để tránh chờ vô hạn
+        // Timeout để tránh chờ vô hạn
         setTimeout(() => {
           clearInterval(checkRefreshed);
           reject(new Error('Token refresh timeout'));
-        }, 5000);
+        }, 10000);
       });
       
       return refreshTokenPromise;
     }
 
-    // Đánh dấu đang refresh
+    // flag refresh
     isTokenRefreshing = true;
     
-    // Tạo promise mới
-    refreshTokenPromise = axios.post(
-      `${import.meta.env.VITE_BACKEND_URL}/auth/refresh`, 
-      {
-        headers: { 'Content-Type': 'application/json' },
-        withCredentials: true
-      }
-    )
+    refreshTokenPromise = axios({
+      method: 'post',
+      url: `${import.meta.env.VITE_BACKEND_URL}/auth/refresh`,
+      withCredentials: true,
+      headers: { 'Content-Type': 'application/json' }
+    })
     .then(response => {
       const { access_token } = response.data.data;
       if (access_token) {
@@ -93,7 +91,7 @@ const refreshAccessToken = async () => {
     })
     .finally(() => {
       isTokenRefreshing = false;
-      // Reset promise sau khi hoàn thành
+      // Reset promise after done
       setTimeout(() => {
         refreshTokenPromise = null;
       }, 1000); // Giữ promise 1 giây để tránh race condition
