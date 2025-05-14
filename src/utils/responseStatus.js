@@ -10,6 +10,7 @@ export const RESPONSE_STATUS = {
     //Custom status code
     RESOURCE_INVALID: -5,
     USER_NOT_FOUND: -6,
-    DUPLICATE: -7
+    DUPLICATE: -7,
+    RESOURCE_NOT_FOUND: -10
   };
   

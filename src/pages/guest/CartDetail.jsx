@@ -39,7 +39,7 @@ const Cart = ({ dispatch }) => {
     const res = await apiDeleteCart(pid);
     const messages = {
       [RESPONSE_STATUS.SUCCESS]: "Đã xóa sản phẩm",
-      [RESPONSE_STATUS.RESOURCE_INVALID]: "Sản phẩm không tồn tại trong giỏ hàng",
+      [RESPONSE_STATUS.RESOURCE_NOT_FOUND]: "Sản phẩm không tồn tại trong giỏ hàng",
     };
     message[res.statusCode === RESPONSE_STATUS.SUCCESS ? 'success' : 'error'](messages[res.statusCode] || "Có lỗi trong quá trình xóa");
     res.statusCode === RESPONSE_STATUS.SUCCESS && dispatch(getCurrentUser());
@@ -148,7 +148,7 @@ const Cart = ({ dispatch }) => {
         const rs = await apiAddOrUpdateCart(pid, finalChange);
         if (rs.statusCode === RESPONSE_STATUS.CREATED) {
           message.success(`Đã cập nhật số lượng mới: ${rs.data.quantity}`);
-        } else if (rs.statusCode === RESPONSE_STATUS.RESOURCE_INVALID) {
+        } else if (rs.statusCode === RESPONSE_STATUS.RESOURCE_NOT_FOUND) {
           message.error(rs.message);
         } else {
           message.error("Có lỗi xảy ra");

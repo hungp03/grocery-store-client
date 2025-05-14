@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import { apiGetProduct, apiGetRatingsPage, apiRatings, apiAddOrUpdateCart, apiAddWishList, apiGetProducts, } from "@/apis"
+import { apiGetProduct, apiGetRatingsPage, apiRatings, apiAddOrUpdateCart, apiAddWishList, apiGetProducts, apiGetWishlistStatus, apiDeleteWishlist } from "@/apis"
 import { Pagination, Breadcrumb, Button, QuantitySelector, ProductExtraInfoItem, ProductInfomation, VoteOption, Comment, ProductCard, ProductNotFound, ProductImageSkeleton, RecommendedSkeleton, FeedbackSkeleton, BreadcrumbSkeleton, ProductInfoSkeleton } from "@/components"
 import { formatMoney, renderStarFromNumber } from "@/utils/helper"
 import product_default from "@/assets/product_default.png"
@@ -11,7 +11,7 @@ import { showModal } from "@/store/app/appSlice"
 import Swal from "sweetalert2"
 import path from "@/utils/path"
 import clsx from "clsx"
-import { message } from "antd"
+import { message, Tooltip } from "antd"
 import icons from "@/utils/icons"
 import { getCurrentUser } from "@/store/user/asyncActions"
 import { RESPONSE_STATUS } from "@/utils/responseStatus"
@@ -33,6 +33,7 @@ const ProductDetail = ({ isQuickView, data }) => {
   const [recommendedProducts, setRecommendedProducts] = useState(null)
   const [pid, setPid] = useState(null)
   const [productNotFound, setProductNotFound] = useState(false)
+  const [isWishlisted, setIsWishlisted] = useState(false)
 
   // Add loading states
   const [isLoadingProduct, setIsLoadingProduct] = useState(false)
@@ -60,7 +61,7 @@ const ProductDetail = ({ isQuickView, data }) => {
       if (response.statusCode === RESPONSE_STATUS.SUCCESS) {
         setProduct(response.data)
         setProductNotFound(false)
-      } else if (response.statusCode === RESPONSE_STATUS.RESOURCE_INVALID) {
+      } else if (response.statusCode === RESPONSE_STATUS.RESOURCE_NOT_FOUND) {
         setProductNotFound(true)
       }
     } catch (error) {
@@ -137,6 +138,23 @@ const ProductDetail = ({ isQuickView, data }) => {
     }
   }, [isQuickView])
 
+  useEffect(() => {
+    const fetchWishlistStatus = async () => {
+      if (!pid || !isLoggedIn) return
+      try {
+        const res = await apiGetWishlistStatus(pid)
+        if (res.statusCode === RESPONSE_STATUS.SUCCESS) {
+          setIsWishlisted(res.data?.wishlisted)
+        }
+      } catch (err) {
+        console.error("Lỗi khi kiểm tra wishlist:", err)
+      }
+    }
+
+    fetchWishlistStatus()
+  }, [pid, isLoggedIn])
+
+
   const rerender = useCallback(() => {
     setUpdate((prev) => !prev)
   }, [])
@@ -186,13 +204,30 @@ const ProductDetail = ({ isQuickView, data }) => {
     })
   }
 
-  const addWishList = async (pid) => {
+  const toggleWishlist = async (pid) => {
     await checkLoginAndExecute(async () => {
-      const rs = await apiAddWishList(pid)
-      if (rs.statusCode === RESPONSE_STATUS.CREATED) {
-        message.success("Thêm thành công vào danh sách yêu thích")
-      } else {
-        message.warning(rs.message)
+      try {
+        if (isWishlisted) {
+          // Đã yêu thích -> xóa
+          const rs = await apiDeleteWishlist(pid)
+          if (rs.statusCode === RESPONSE_STATUS.SUCCESS) {
+            message.success("Đã xóa khỏi danh sách yêu thích")
+            setIsWishlisted(false)
+          } else {
+            message.warning(rs.message)
+          }
+        } else {
+          // Chưa yêu thích -> thêm
+          const rs = await apiAddWishList(pid)
+          if (rs.statusCode === RESPONSE_STATUS.CREATED) {
+            message.success("Đã thêm vào danh sách yêu thích")
+            setIsWishlisted(true)
+          } else {
+            message.warning(rs.message)
+          }
+        }
+      } catch (err) {
+        console.error("Lỗi khi cập nhật wishlist:", err)
       }
     })
   }
@@ -243,7 +278,7 @@ const ProductDetail = ({ isQuickView, data }) => {
                   <img
                     src={
                       product?.imageUrl
-                       || product_default
+                      || product_default
                     }
                     alt="product"
                     className="object-cover w-full h-full"
@@ -281,12 +316,17 @@ const ProductDetail = ({ isQuickView, data }) => {
                           onDecrease={() => handleQuantityChange(Math.max(quantity - 1, 1))}
                           onChange={handleQuantityChange}
                         />
-                        <span
-                          className="ml-4 hover:scale-125 transition-transform duration-300 ease-in-out transform"
-                          onClick={() => addWishList(product?.id)}
+                        <Tooltip
+                          title={isWishlisted ? "Xóa khỏi danh sách yêu thích" : "Thêm vào danh sách yêu thích"}
+                          color={isWishlisted ? "#EF4444" : "#10B981"}
                         >
-                          <FaHeart size={20} color="#10B981" />
-                        </span>
+                          <span
+                            className="cursor-pointer"
+                            onClick={() => toggleWishlist(pid)}
+                          >
+                            <FaHeart size={20} color={isWishlisted ? "#EF4444" : "#10B981"} />
+                          </span>
+                        </Tooltip>
                       </div>
 
                       <Button fw handleOnClick={() => addToCart(product?.id, quantity)}>

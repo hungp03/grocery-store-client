@@ -71,6 +71,11 @@ export const apiUpdateProduct2 = async (id, product) =>
         data: product,
     })
  
+export const apiGetWishlistStatus = async (pid) =>
+    axiosInstance({
+        url: `/wishlist/status/${pid}`,
+        method: 'get',
+    }); 
 
 
 
