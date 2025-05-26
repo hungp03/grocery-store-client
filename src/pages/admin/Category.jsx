@@ -112,22 +112,26 @@ const Category = () => {
     },
   ];
 
-  return (
+ return (
     <>
-      <div className="w-full">
-        <Table
-          dataSource={categories?.data?.result}
-          columns={columns}
-          rowKey="id"
-          loading={loading}
-          pagination={{
-            current: currentPage,
-            pageSize: PAGE_SIZE,
-            onChange: (page) => {
-              setCurrentPage(page);
-            },
-            total: categories?.data?.meta?.total,
-          }} />
+      <div className="w-full p-4 sm:p-6 lg:p-8">
+        <div className="overflow-x-auto">
+          <Table
+            dataSource={categories?.data?.result}
+            columns={columns}
+            rowKey="id"
+            loading={loading}
+            pagination={{
+              current: currentPage,
+              pageSize: PAGE_SIZE,
+              onChange: (page) => {
+                setCurrentPage(page);
+              },
+              total: categories?.data?.meta?.total,
+            }}
+          />
+        </div>
+
         <Modal
           title="Xác nhận xóa"
           open={!!deleteCategoryId}
@@ -152,8 +156,12 @@ const Category = () => {
           <p>{deleteMessageContent}</p>
         </Modal>
 
-        <div>
-          <AddButton buttonName='+ Thêm phân loại' buttonClassName='bg-green-500 hover:bg-green-700' toLink='add' />
+        <div className="mt-4 text-center">
+          <AddButton
+            buttonName='+ Thêm phân loại'
+            buttonClassName='bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded-md'
+            toLink='add'
+          />
         </div>
       </div>
     </>

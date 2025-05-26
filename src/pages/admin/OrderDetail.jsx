@@ -67,7 +67,7 @@ function OrderDetail() {
   useEffect(() => {
     if (orderDetail?.data) {
       const total = orderDetail.data.reduce((sum, item) => {
-        return sum + item.unit_price * item.quantity;
+        return sum + item.unitPrice * item.quantity;
       }, 0);
       setTotalMoney(total);
     }
@@ -93,7 +93,7 @@ function OrderDetail() {
     },
     {
       title: 'Giá',
-      dataIndex: 'unit_price',
+      dataIndex: 'unitPrice',
       render: (text) => `${text ? text.toLocaleString("vi-VN") : "0"} đ`,
     },
     {
@@ -103,7 +103,7 @@ function OrderDetail() {
     {
       title: 'Tổng cộng',
       dataIndex: 'total',
-      render: (text, record) => `${(record.unit_price * record.quantity).toLocaleString("vi-VN")} đ`,
+      render: (text, record) => `${(record.unitPrice * record.quantity).toLocaleString("vi-VN")} đ`,
     },
   ];
 
@@ -124,7 +124,7 @@ function OrderDetail() {
           </Col>
           <Col span={12}>
             <Title level={4}>Đơn hàng</Title>
-            <Text strong>Tổng số tiền:</Text> {orderInformation?.data?.total_price.toLocaleString("vi-VN")} đ<br />
+            <Text strong>Tổng số tiền:</Text> {orderInformation?.data?.totalPrice.toLocaleString("vi-VN")} đ<br />
             <Text strong>Phương thức thanh toán:</Text> {paymentMethod}<br />
             <Text strong>📅 Thời gian đặt hàng:</Text> {new Date(orderInformation?.data?.orderTime)
               .toLocaleString("vi-VN", {
@@ -162,7 +162,7 @@ function OrderDetail() {
           </Col>
         </Row>
       </Card>
-      <Card title="Cart Items" style={{ width: '90%', margin: '20px auto' }}>
+      <Card title="Sản phẩm" style={{ width: '90%', margin: '20px auto' }}>
         <Table
           columns={columns}
           dataSource={orderDetail?.data}

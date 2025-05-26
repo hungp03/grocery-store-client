@@ -31,9 +31,11 @@ const RevenueChart = ({ data }) => {
   };
 
   return (
-    <div>
-      <h2>Biểu đồ doanh thu theo tuần trong tháng</h2>
-      <Line data={chartData} options={options} />
+    <div className="w-full">
+      <h2 className="text-center mb-4">Biểu đồ doanh thu theo tuần trong tháng</h2>
+      <div className="w-full h-[300px] sm:h-[400px] lg:h-[500px]">
+        <Line data={chartData} options={options} />
+      </div>
     </div>
   );
 };

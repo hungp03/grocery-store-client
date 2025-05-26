@@ -105,7 +105,7 @@ const SearchBar = () => {
                   className="p-2 border-b cursor-pointer"
                   onClick={() => handleProductClick(product)}
                 >
-                  <ProductMiniItem title={product.product_name} image={product.imageUrl || product_default} price={product.price} />
+                  <ProductMiniItem title={product.productName} image={product.imageUrl || product_default} price={product.price} />
                 </div>
               ))}
               <button

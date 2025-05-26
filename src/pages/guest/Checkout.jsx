@@ -47,7 +47,7 @@ const Checkout = () => {
                 productId: item?.id,
                 productName: item?.productName,
                 quantity: item?.quantity,
-                unit_price: item?.price
+                unitPrice: item?.price
             }))
         };
 

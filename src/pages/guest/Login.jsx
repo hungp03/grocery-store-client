@@ -43,7 +43,7 @@ const Login = () => {
       const result = await apiLogin(data);
       setLoading(false);
       if (result.statusCode === RESPONSE_STATUS.SUCCESS) {
-        dispatch(login({ isLoggedIn: true, token: result.data.access_token, userData: result.data.user }));
+        dispatch(login({ isLoggedIn: true, token: result.data.accessToken, userData: result.data.user }));
         setTimeout(() => {
           navigate(`/${path.HOME}`);
         }, 1000);
@@ -53,34 +53,44 @@ const Login = () => {
     }
   }, [payload, isRegister, dispatch, navigate]);
 
-  const responseGoogle = async (response) => {
-    const { credential } = response;
-    if (credential) {
+  const responseGoogle = useCallback(async (response) => {
+    setLoading(true);
+    try {
+      const { credential } = response;
+      if (!credential) throw new Error("Google credential missing");
       const result = await apiLoginGoogle({ credential });
       if (result.statusCode === RESPONSE_STATUS.SUCCESS) {
-        dispatch(login({ isLoggedIn: true, token: result.data.access_token, userData: result.data.user }));
-        navigate(`/${path.HOME}`);
+        dispatch(login({
+          isLoggedIn: true,
+          token: result.data.accessToken,
+          userData: result.data.user
+        }));
+         setTimeout(() => {
+          navigate(`/${path.HOME}`);
+        }, 1000);
+      } else {
+        throw new Error(result.message);
       }
-       else {
-        Swal.fire('Oops!', result.message, 'error');
-      }
+    } catch (err) {
+      Swal.fire('Oops!', err.message, 'error');
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [dispatch, navigate]);
+
 
   return (
     <div className="w-full h-screen flex items-center justify-center bg-gradient-to-r from-green-300 to-blue-300 relative">
+      {loading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 rounded-lg z-10">
+            <ClipLoader size={35} color={"#123abc"} loading={loading} />
+          </div>
+        )}
       {isForgotPass && <ForgotPassword onClose={() => setIsForgotPass(false)} />}
       <div className="relative bg-white shadow-lg rounded-lg p-10 w-[90%] md:w-[500px] space-y-6">
         <h1 className="text-3xl font-semibold text-main text-center">
           {isRegister ? "Đăng ký" : "Đăng nhập"}
         </h1>
-
-        {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 rounded-lg z-10">
-            <ClipLoader size={35} color={"#123abc"} loading={loading} />
-          </div>
-        )}
-
         <>
           {isRegister && (
             <InputField
@@ -138,7 +148,7 @@ const Login = () => {
           <Button
             fw={true}
             handleOnClick={handleSubmit(onSubmit)}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md mt-4"
+            className="w-full hover:bg-[#57cc99] text-white py-2 rounded-md mt-4"
             disabled={loading}
           >
             {isRegister ? "Đăng ký" : "Đăng nhập"}

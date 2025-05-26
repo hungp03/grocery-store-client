@@ -1,15 +1,28 @@
 import React from "react";
 
-const Button = ({children, handleOnClick, style, fw, type = "button" }) => {
+const Button = ({
+  children,
+  handleOnClick,
+  className = "",
+  fw = false,
+  type = "button",
+}) => {
+  // fw=true ⇒ full width; fw=false ⇒ fit nội dung
+  const widthClass = fw ? "w-full" : "w-fit";
+
   return (
     <button
-    type={type}
-      className={
-        style ? style : `px-4 py-2 rounded-md text-white bg-main text-semibold my-2 ${fw? 'w-full': 'w-fit'}`
-      }
-      onClick={() => {
-        handleOnClick && handleOnClick();
-      }}>
+      type={type}
+      className={`
+         px-4 py-2
+         rounded-md
+         text-white bg-main
+         font-semibold my-2
+         ${widthClass}
+         ${className}
+       `}
+      onClick={handleOnClick}
+    >
       {children}
     </button>
   );

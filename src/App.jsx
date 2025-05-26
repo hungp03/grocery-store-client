@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react'
 import path from '@/utils/path'
 import { Route, Routes } from "react-router-dom";
-import { Login, Home, Public, ProductDetail, Product, ResetPassword, CartDetail, Checkout, ErrorPage, PaymentSuccess, PaymentFailure, Unauthorized } from "@/pages/guest";
+import { Login, Home, Public, ProductDetail, Product, CartDetail, Checkout, ErrorPage, PaymentSuccess, PaymentFailure, Unauthorized } from "@/pages/guest";
 import { MemberLayout, Personal, Wishlist, History, Setting } from '@/pages/member';
 import { useDispatch, useSelector } from "react-redux";
 import { getCategories } from "@/store/app/asyncActions";
 import { Modal } from '@/components';
-import { Admin} from "./pages/admin/index";
+import { Admin } from "./pages/admin/index";
 import ScrollToTop from '@/utils/ScrollToTop.jsx';
+import AppDownloadModal from '@/components/AppDownloadModal';
 
 const App = () => {
 
@@ -21,6 +22,7 @@ const App = () => {
     <div id="main-wrapper" className="min-h-screen font-main relative">
       <ScrollToTop />
       {isShowModal && <Modal>{modalChildren}</Modal>}
+      <AppDownloadModal />
       <Routes>
         <Route path={path.PUBLIC} element={<Public />}>
           <Route path={path.HOME} element={<Home />}></Route>
@@ -29,7 +31,6 @@ const App = () => {
           <Route path={path.PRODUCT_DETAIL} element={<ProductDetail />}></Route>
           <Route path={path.CART} element={<CartDetail />}></Route>
           <Route path={path.CHECKOUT} element={<Checkout />}></Route>
-          <Route path={path.RESET_PASSWORD} element={<ResetPassword />}></Route>
           <Route path={path.ERROR} element={<ErrorPage />} />
           <Route path={path.UNAUTHORIZED} element={<Unauthorized />} />
           <Route path='*' element={<ErrorPage />}></Route>

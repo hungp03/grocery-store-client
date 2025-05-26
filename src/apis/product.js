@@ -77,5 +77,15 @@ export const apiGetWishlistStatus = async (pid) =>
         method: 'get',
     }); 
 
+export const apiSummarizeFeedbackByProduct = async (pid, page, size) =>
+    axiosInstance({
+        url: `generative/${pid}`,
+        method: 'post',
+        params: {
+            page: page,
+            size: size,
+        }
+    });
+
 
 

@@ -11,6 +11,7 @@ export const RESPONSE_STATUS = {
     RESOURCE_INVALID: -5,
     USER_NOT_FOUND: -6,
     DUPLICATE: -7,
-    RESOURCE_NOT_FOUND: -10
+    RESOURCE_NOT_FOUND: -10,
+    EXCEPTION: -1
   };
   

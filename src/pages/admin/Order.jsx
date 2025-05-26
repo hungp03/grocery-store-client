@@ -174,8 +174,8 @@ const Order = () => {
     },
     {
       title: 'Thành tiền',
-      dataIndex: 'total_price',
-      key: 'total_price',
+      dataIndex: 'totalPrice',
+      key: 'totalPrice',
     },
     {
       title: 'Thanh toán',

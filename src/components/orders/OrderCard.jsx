@@ -89,7 +89,7 @@ const OrderCard = ({ order, onClose, updateOrderStatus }) => {
                                 {new Intl.NumberFormat("vi-VN", {
                                     style: "currency",
                                     currency: "VND",
-                                }).format(+product.unit_price)}
+                                }).format(+product.unitPrice)}
                             </Text>
                         </div>
                     </div>
@@ -100,7 +100,7 @@ const OrderCard = ({ order, onClose, updateOrderStatus }) => {
                 <Text strong>Thành tiền:</Text>
                 <Text strong type="danger" className="text-lg">
                     {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(
-                        products?.reduce((total, item) => total + item?.unit_price * item?.quantity, 0)
+                        products?.reduce((total, item) => total + item?.unitPrice * item?.quantity, 0)
                     )}
                 </Text>
             </div>

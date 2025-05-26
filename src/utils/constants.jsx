@@ -144,7 +144,7 @@ export const sortFeedbackOrder = [
   },
   {
     label: "Product",
-    value: "product_name"
+    value: "productName"
   },
   {
     label: "Rating Star",

@@ -134,7 +134,7 @@ const ProductCard = ({ productData, navigate, dispatch }) => {
         </div>
 
         <div className="flex flex-col gap-1 mt-[15px] items-start w-full">
-          <span className="line-clamp-1">{productData?.product_name}</span>
+          <span className="line-clamp-1">{productData?.productName}</span>
           <span className="flex">
             {renderStarFromNumber(productData?.rating)}
           </span>
