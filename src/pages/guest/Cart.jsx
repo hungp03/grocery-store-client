@@ -274,16 +274,16 @@ const Cart = ({ dispatch }) => {
   }, [selectedItems, cartItems]);
 
   return (
-    <div className="w-main mt-10 p-6 bg-white shadow-md rounded-lg min-h-[30vh]">
-      <h2 className="text-xl font-semibold mb-4">Giỏ hàng</h2>
+    <div className="w-full px-4 md:w-main md:mx-auto mt-10 p-6 bg-white shadow-md rounded-lg min-h-[30vh]">
+      <h2 className="text-xl font-semibold mb-6">Giỏ hàng</h2>
 
       {isLoading ? (
         <div className="flex justify-center items-center min-h-[20vh]">
           <CircleLoader color="#36d7b7" loading={isLoading} size={30} />
         </div>
       ) : cartItems.length > 0 ? (
-        <div className="space-y-4">
-          {cartItems.map((item) => (
+        <div className="space-y-6">
+          {cartItems.map(item => (
             <CartItem
               key={item.id}
               item={item}

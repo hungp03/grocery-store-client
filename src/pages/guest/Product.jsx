@@ -152,11 +152,11 @@ const Product = () => {
     );
   }
 
-  return (
-    <div className='w-full'>
-      <div className='h-20 flex justify-center items-center bg-gray-100'>
-        <div className='w-main'>
-          <h3 className='font-semibold uppercase'>{getPageTitle()}</h3>
+ return (
+    <div className="w-full">
+      <div className="bg-gray-100 py-4">
+        <div className="px-4 md:px-0 md:w-main md:mx-auto">
+          <h3 className="font-semibold uppercase">{getPageTitle()}</h3>
           {category ? (
             <Breadcrumb category={category} categoryName={categoryName} />
           ) : (
@@ -165,44 +165,46 @@ const Product = () => {
         </div>
       </div>
 
-      <div className='w-main border p-4 flex justify-between mt-8 m-auto'>
-        <div className='w-3/4 flex-auto flex items-center gap-4'>
-          <span className='font-semibold text-sm'>Lọc</span>
-          <FilterItem
-            name='price'
-            activeClick={activeClick}
-            changeActiveFilter={changeActiveFilter}
-            range
-            min={0}
-            max={500000}
-            step={1000}
-          />
+      <div className="px-4 md:px-0 md:w-main md:mx-auto border p-4 mt-6">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+            <span className="font-semibold text-sm">Lọc:</span>
+            <FilterItem
+              name="price"
+              activeClick={activeClick}
+              changeActiveFilter={changeActiveFilter}
+              range
+              min={0}
+              max={500000}
+              step={1000}
+            />
+            <FilterItem
+              name="rating"
+              activeClick={activeClick}
+              changeActiveFilter={changeActiveFilter}
+              range
+              min={0}
+              max={5}
+              step={0.5}
+            />
+          </div>
 
-          <FilterItem
-            name='rating'
-            activeClick={activeClick}
-            changeActiveFilter={changeActiveFilter}
-            range
-            min={0}
-            max={5}
-            step={0.5}
-          />
-        </div>
-        <div className='w-1/4 flex-auto'>
-          <SortItem
-            sortOption={sortOption}
-            setSortOption={setSortOption}
-            sortOptions={sortProductOption}
-          />
+          <div className="flex-shrink-0">
+            <SortItem
+              sortOption={sortOption}
+              setSortOption={setSortOption}
+              sortOptions={sortProductOption}
+            />
+          </div>
         </div>
       </div>
 
-      <div className='mt-8 w-main m-auto'>
+      <div className="px-4 md:px-0 md:w-main md:mx-auto mt-8">
         {isProductLoading ? (
-          <div className="flex items-center justify-center h-[400px]">
+          <div className="flex items-center justify-center h-[300px]">
             <ClipLoader
               size={50}
-              color={"#123abc"}
+              color="#123abc"
               loading={isProductLoading}
               cssOverride={override}
               aria-label="Loading Products"
@@ -212,7 +214,7 @@ const Product = () => {
           <Masonry
             breakpointCols={breakpointColumnsObj}
             className="my-masonry-grid flex mx-0"
-            columnClassName="my-masonry-grid_column mb-[-20px]"
+            columnClassName="my-masonry-grid_column mb-[-16px]"
           >
             {products.result.map((e) => (
               <ProductCard key={uuidv4()} productData={e} />
@@ -225,18 +227,19 @@ const Product = () => {
         )}
       </div>
 
-      {products?.meta?.pages > 1 && <div className='w-main m-auto my-4 flex justify-center'>
-        <Pagination
-          totalPage={products?.meta?.pages}
-          currentPage={products?.meta?.page}
-          totalProduct={products?.meta?.total}
-          pageSize={products?.meta?.pageSize}
-          onPageChange={handlePagination}
-        />
-      </div>}
+      {products?.meta?.pages > 1 && (
+        <div className="px-4 md:px-0 md:w-main md:mx-auto my-6 flex justify-center">
+          <Pagination
+            totalPage={products.meta.pages}
+            currentPage={products.meta.page}
+            totalProduct={products.meta.total}
+            pageSize={products.meta.pageSize}
+            onPageChange={handlePagination}
+          />
+        </div>
+      )}
     </div>
   );
 };
 
 export default Product;
-

@@ -68,7 +68,7 @@ function SearchProduct({ onSearch }) {
       </div>
 
       <button
-        className="bg-main text-white px-4 py-2 rounded-md flex items-center space-x-2"
+        className="bg-main text-white px-4 py-2 rounded-md flex items-center space-x-2 mx-4"
         onClick={handleExportExcel}
       >
         <FaFileExport />

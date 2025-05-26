@@ -102,8 +102,8 @@ const History = ({ navigate, location }) => {
         },
         {
             title: "Tổng tiền",
-            dataIndex: "total_price",
-            key: "total_price",
+            dataIndex: "totalPrice",
+            key: "totalPrice",
             align: "right",
             render: (text) => text.toLocaleString("vi-VN", { style: "currency", currency: "VND" })
         },

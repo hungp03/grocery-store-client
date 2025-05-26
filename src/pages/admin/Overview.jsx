@@ -79,35 +79,111 @@ const Overview = () => {
     fetchOverviewOrder(selectedMonth);
   }, [selectedMonth, selectedYear]);
 
+  //   return (
+  //     <div className="flex">
+  //       <div className="flex-1 p-6 bg-white">
+  //         {loading ? (
+  //           <div className="flex w-main justify-center items-center h-96">
+  //             <Spin size="large"/>
+  //           </div>
+  //         ) : (
+  //           <>
+  //             <h1 className="text-2xl font-bold mb-4">Overview</h1>
+  //             <div className="grid grid-cols-4 gap-4 mb-6">
+  //               <div className="bg-white shadow rounded-lg p-4 pb-12">
+  //                 <h2 className="text-sm font-medium">Tổng lợi nhuận</h2>
+  //                 <p className="text-2xl font-bold">{totalProfit.toLocaleString("vi-VN")} đ</p>
+  //               </div>
+  //               <div className="bg-white shadow rounded-lg p-4 pr-28">
+  //                 <h2 className="text-sm font-medium">Người sử dụng</h2>
+  //                 <p className="text-2xl font-bold">{totalUser}</p>
+  //               </div>
+  //               <div className="bg-white shadow rounded-lg p-4">
+  //                 <h2 className="text-sm font-medium">Tổng sản phẩm</h2>
+  //                 <p className="text-2xl font-bold">{totalProduct}</p>
+  //               </div>
+  //               <div className="bg-white shadow rounded-lg p-4">
+  //                 <h2 className="text-sm font-medium">Đơn hàng</h2>
+  //                 <p className="text-2xl font-bold">{totalOrder}</p>
+  //               </div>
+  //             </div>
+  //             <div className="flex">
+  //               <div className="mb-4">
+  //                 <label htmlFor="yearSelect" className="block text-sm font-medium mb-2">
+  //                   Chọn năm
+  //                 </label>
+  //                 <select
+  //                   id="yearSelect"
+  //                   value={selectedYear}
+  //                   onChange={handleYearChange}
+  //                   className="border w-[105px] rounded p-2 text-sm"
+  //                 >
+  //                   <option value={lastYear}>{lastYear}</option>
+  //                   <option value={currentYear}>{currentYear}</option>
+  //                 </select>
+  //               </div>
+  //               <div className="mb-4 ml-20">
+  //                 <label htmlFor="monthSelect" className="block text-sm font-medium mb-2">
+  //                   Chọn tháng
+  //                 </label>
+  //                 <select
+  //                   id="monthSelect"
+  //                   value={selectedMonth}
+  //                   onChange={handleMonthChange}
+  //                   className="border w-[105px] rounded p-2 text-sm"
+  //                 >
+  //                   {months
+  //                     .filter((month) =>
+  //                       // Nếu là năm nay, chỉ cho phép chọn tháng <= tháng hiện tại
+  //                       selectedYear === currentYear ? month.value <= currentMonth : true
+  //                     )
+  //                     .map((month) => (
+  //                       <option key={month.value} value={month.value}>
+  //                         {month.label}
+  //                       </option>
+  //                     ))}
+  //                 </select>
+  //               </div>
+  //             </div>
+  //             <RevenueChart data={chartData} />
+  //           </>
+  //         )}
+  //       </div>
+  //     </div>
+  //   );
+  // };
+
+  // export default Overview;
   return (
-    <div className="flex">
+    <div className="flex flex-col lg:flex-row">
       <div className="flex-1 p-6 bg-white">
         {loading ? (
-          <div className="flex w-main justify-center items-center h-96">
-            <Spin size="large"/>
+          <div className="flex w-full justify-center items-center h-96">
+            <Spin size="large" />
           </div>
         ) : (
           <>
             <h1 className="text-2xl font-bold mb-4">Overview</h1>
-            <div className="grid grid-cols-4 gap-4 mb-6">
-              <div className="bg-white shadow rounded-lg p-4 pb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              <div className="bg-white shadow rounded-lg p-4 sm:p-2 md:p-4 pb-12 w-full">
                 <h2 className="text-sm font-medium">Tổng lợi nhuận</h2>
                 <p className="text-2xl font-bold">{totalProfit.toLocaleString("vi-VN")} đ</p>
               </div>
-              <div className="bg-white shadow rounded-lg p-4 pr-28">
+              <div className="bg-white shadow rounded-lg p-4 sm:p-2 md:p-4 pr-28 w-full">
                 <h2 className="text-sm font-medium">Người sử dụng</h2>
                 <p className="text-2xl font-bold">{totalUser}</p>
               </div>
-              <div className="bg-white shadow rounded-lg p-4">
+              <div className="bg-white shadow rounded-lg p-4 sm:p-2 md:p-4 w-full">
                 <h2 className="text-sm font-medium">Tổng sản phẩm</h2>
                 <p className="text-2xl font-bold">{totalProduct}</p>
               </div>
-              <div className="bg-white shadow rounded-lg p-4">
+              <div className="bg-white shadow rounded-lg p-4 sm:p-2 md:p-4 w-full">
                 <h2 className="text-sm font-medium">Đơn hàng</h2>
                 <p className="text-2xl font-bold">{totalOrder}</p>
               </div>
             </div>
-            <div className="flex">
+
+            <div className="flex flex-col sm:flex-row">
               <div className="mb-4">
                 <label htmlFor="yearSelect" className="block text-sm font-medium mb-2">
                   Chọn năm
@@ -122,7 +198,7 @@ const Overview = () => {
                   <option value={currentYear}>{currentYear}</option>
                 </select>
               </div>
-              <div className="mb-4 ml-20">
+              <div className="mb-4 sm:ml-20">
                 <label htmlFor="monthSelect" className="block text-sm font-medium mb-2">
                   Chọn tháng
                 </label>
@@ -134,7 +210,6 @@ const Overview = () => {
                 >
                   {months
                     .filter((month) =>
-                      // Nếu là năm nay, chỉ cho phép chọn tháng <= tháng hiện tại
                       selectedYear === currentYear ? month.value <= currentMonth : true
                     )
                     .map((month) => (

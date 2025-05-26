@@ -12,6 +12,9 @@ module.exports = {
       width: {
         main: "1280px",
       },
+      maxWidth: {
+        'screen-xl': '1280px'
+      },
       gridTemplateRows: {
 
         '10': 'repeat(10, minmax(0, 1fr))',

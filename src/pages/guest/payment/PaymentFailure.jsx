@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom';
-import { FaTimesCircle } from 'react-icons/fa'; // Import biểu tượng từ React Icons
+import { FaTimesCircle } from 'react-icons/fa';
 
 const PaymentFailure = () => {
     return (
@@ -10,10 +10,10 @@ const PaymentFailure = () => {
                     Thanh toán không thành công
                 </h1>
                 <div className="flex justify-center mb-4">
-                    <FaTimesCircle className="h-20 w-20 text-red-600" /> {/* Sử dụng biểu tượng từ React Icons */}
+                    <FaTimesCircle className="h-20 w-20 text-red-600" />
                 </div>
                 <p className="text-center text-gray-700 mb-6">
-                    Rất tiếc, giao dịch của bạn không thành công. Vui lòng kiểm tra lại thông tin thanh toán của bạn và thử lại.
+                    Rất tiếc, giao dịch của bạn không thành công. Vui lòng kiểm tra lại thông tin thanh toán của bạn và thử lại. Đơn hàng của bạn sẽ không được xử lý cho đến khi thanh toán thành công hoặc sẽ bị hủy.
                 </p>
                 <Link 
                     to="/" 

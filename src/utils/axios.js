@@ -61,42 +61,42 @@ const refreshAccessToken = async () => {
             }
           }
         }, 100);
-        
+
         // Timeout để tránh chờ vô hạn
         setTimeout(() => {
           clearInterval(checkRefreshed);
           reject(new Error('Token refresh timeout'));
         }, 10000);
       });
-      
+
       return refreshTokenPromise;
     }
 
     // flag refresh
     isTokenRefreshing = true;
-    
+
     refreshTokenPromise = axios({
       method: 'post',
       url: `${import.meta.env.VITE_BACKEND_URL}/auth/refresh`,
       withCredentials: true,
       headers: { 'Content-Type': 'application/json' }
     })
-    .then(response => {
-      const { access_token } = response.data.data;
-      if (access_token) {
-        saveToken(access_token);
-        return access_token;
-      }
-      throw new Error('No access token received');
-    })
-    .finally(() => {
-      isTokenRefreshing = false;
-      // Reset promise after done
-      setTimeout(() => {
-        refreshTokenPromise = null;
-      }, 1000); // Giữ promise 1 giây để tránh race condition
-    });
-    
+      .then(response => {
+        const { accessToken } = response.data.data;
+        if (accessToken) {
+          saveToken(accessToken);
+          return accessToken;
+        }
+        throw new Error('No access token received');
+      })
+      .finally(() => {
+        isTokenRefreshing = false;
+        // Reset promise after done
+        setTimeout(() => {
+          refreshTokenPromise = null;
+        }, 1000); // Giữ promise 1 giây để tránh race condition
+      });
+
     return refreshTokenPromise;
   } catch (error) {
     isTokenRefreshing = false;
@@ -109,11 +109,11 @@ const refreshAccessToken = async () => {
 
 axiosInstance.interceptors.request.use(async function (config) {
   let token = getLocalToken();
-  
+
   if (token) {
     config.headers.authorization = `Bearer ${token}`;
   }
-  
+
   return config;
 }, function (error) {
   return Promise.reject(error);
@@ -124,10 +124,11 @@ axiosInstance.interceptors.response.use(
   (response) => response.data,
   async (error) => {
     const originalRequest = error.config;
-
-    if (error.response?.status === 403) {
+    const resData = error.response?.data;
+    if (error.response?.status === 403 && resData?.statusCode === -4) {
       localStorage.removeItem('persist:ogani_shop/user');
-      return error.response.data;
+      store.dispatch(setExpiredMessage());
+      return Promise.reject(new Error('Tài khoản đã bị khóa'));
     }
 
     // handle lỗi 401 (Unauthorized) - Token hết hạn

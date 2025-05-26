@@ -30,14 +30,14 @@ const Feedback = ({ navigate, location }) => {
         setLoading(true);
         const apiParams = { page };
         if (status && status !== 'default') apiParams.status = status;
-        if (sort && sort !== 'default' && sort !== 'product_name') apiParams.sort = sort;
+        if (sort && sort !== 'default' && sort !== 'productName') apiParams.sort = sort;
         const response = await apiGetAllRatingsPage(apiParams);
         if (response.statusCode === RESPONSE_STATUS.SUCCESS) {
             let feedbacksList = response.data?.result;
-            if (sort === 'product_name') {
+            if (sort === 'productName') {
                 feedbacksList = feedbacksList.sort((a, b) => {
-                    if (a.product_name < b.product_name) return 1;
-                    if (a.product_name > b.product_name) return -1;
+                    if (a.productName < b.productName) return 1;
+                    if (a.productName > b.productName) return -1;
                     return 0;
                 });
             }
@@ -116,7 +116,7 @@ const Feedback = ({ navigate, location }) => {
     };
 
     const columns = [
-        { title: 'Sản phẩm', dataIndex: 'product_name', key: 'product_name' },
+        { title: 'Sản phẩm', dataIndex: 'productName', key: 'productName' },
         { title: 'Người dùng', dataIndex: 'userName', key: 'userName' },
         { title: 'Đánh giá', dataIndex: 'ratingStar', key: 'ratingStar', align: 'center', render: (rating) => `${rating} ★` },
         { title: 'Mô tả', dataIndex: 'description', key: 'description', render: (text) => (text && text.length > 50 ? `${text.substring(0, 50)}...` : (text || "")) },

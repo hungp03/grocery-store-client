@@ -26,7 +26,7 @@ const FeedbackCard = ({ data, onClose }) => {
                     } alt={data?.userName} className="w-16 h-16 rounded-full border-2 border-primary shadow-md object-cover" />
                     <div className="ml-4">
                     <h2 className="text-2xl font-bold text-primary">{data?.userName}</h2>
-                    <p className="text-sm text-muted-foreground">{data?.product_name}</p>
+                    <p className="text-sm text-muted-foreground">{data?.productName}</p>
                     </div>
                 </div>
                 
@@ -47,7 +47,7 @@ const FeedbackCard = ({ data, onClose }) => {
                     src={
                         data?.imageUrl || productDF
                       }
-                        alt={data?.product_name}
+                        alt={data?.productName}
                         className="w-48  h-48 object-cover rounded-lg shadow-md" />
 
                     <blockquote className="flex-1 max-h-48 min-h-48 min-w-[500px] max-w-[500px] text-gray-700 italic border-l-4 border-primary pl-4 py-2 bg-gray-50 rounded overflow-y-auto">

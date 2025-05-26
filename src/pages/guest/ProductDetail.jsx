@@ -1,29 +1,24 @@
 import { useCallback, useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import { apiGetProduct, apiGetRatingsPage, apiRatings, apiAddOrUpdateCart, apiAddWishList, apiGetProducts, apiGetWishlistStatus, apiDeleteWishlist } from "@/apis"
-import { Pagination, Breadcrumb, Button, QuantitySelector, ProductExtraInfoItem, ProductInfomation, VoteOption, Comment, ProductCard, ProductNotFound, ProductImageSkeleton, RecommendedSkeleton, FeedbackSkeleton, BreadcrumbSkeleton, ProductInfoSkeleton } from "@/components"
-import { formatMoney, renderStarFromNumber } from "@/utils/helper"
-import product_default from "@/assets/product_default.png"
+import { apiGetProduct, apiSummarizeFeedbackByProduct, apiGetRatingsPage, apiRatings, apiAddOrUpdateCart, apiAddWishList, apiGetProducts, apiGetWishlistStatus, apiDeleteWishlist } from "@/apis"
+import { Breadcrumb, ProductExtraInfoItem, ProductInfomation, VoteOption, ProductCard, ProductNotFound, ProductImageSkeleton, RecommendedSkeleton, FeedbackSkeleton, BreadcrumbSkeleton, ProductInfoSkeleton, ProductImages, ProductSummary, ProductFeedbackSection } from "@/components"
 import { productExtraInfo } from "@/utils/constants"
-import Votebar from "@/components/vote/Votebar"
 import { useDispatch, useSelector } from "react-redux"
 import { showModal } from "@/store/app/appSlice"
 import Swal from "sweetalert2"
 import path from "@/utils/path"
 import clsx from "clsx"
-import { message, Tooltip } from "antd"
-import icons from "@/utils/icons"
+import { message } from "antd"
 import { getCurrentUser } from "@/store/user/asyncActions"
 import { RESPONSE_STATUS } from "@/utils/responseStatus"
 
-const { FaHeart } = icons
 const ProductDetail = ({ isQuickView, data }) => {
   const params = useParams()
   const [product, setProduct] = useState(null)
   const [paginate, setPaginate] = useState(null)
-  const [feedbacksPage, setFeedbacksPage] = useState(null)
   const [feedbacks, setFeedbacks] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
+  const [feedbackSummary, setFeedbackSummary] = useState(null)
   const [update, setUpdate] = useState(false)
   const [uid, setUid] = useState(null)
   const { isLoggedIn, current } = useSelector((state) => state.user)
@@ -34,11 +29,14 @@ const ProductDetail = ({ isQuickView, data }) => {
   const [pid, setPid] = useState(null)
   const [productNotFound, setProductNotFound] = useState(false)
   const [isWishlisted, setIsWishlisted] = useState(false)
-
+  
   // Add loading states
   const [isLoadingProduct, setIsLoadingProduct] = useState(false)
   const [isLoadingRecommended, setIsLoadingRecommended] = useState(false)
   const [isLoadingFeedbacks, setIsLoadingFeedbacks] = useState(false)
+  
+  // Add state to track if feedback data has been loaded
+  const [isFeedbackDataLoaded, setIsFeedbackDataLoaded] = useState(false)
 
   const categories = useSelector((state) => state.app.categories);
 
@@ -47,12 +45,17 @@ const ProductDetail = ({ isQuickView, data }) => {
     : "Danh mục sản phẩm";
 
   useEffect(() => {
-    if (data) {
-      setPid(data.pid)
-    } else if (params) {
-      setPid(params.pid)
+    const newPid = data ? data.pid : params?.pid
+    if (newPid && newPid !== pid) {
+      // Reset all feedback-related state when product changes
+      setPid(newPid)
+      setFeedbacks(null)
+      setFeedbackSummary(null)
+      setIsFeedbackDataLoaded(false)
+      setCurrentPage(1)
+      setPaginate(null)
     }
-  }, [params, data])
+  }, [params, data, pid])
 
   const fetchProductData = async () => {
     setIsLoadingProduct(true)
@@ -91,11 +94,10 @@ const ProductDetail = ({ isQuickView, data }) => {
   const fetchFeedbacksData = async (page = 1) => {
     setIsLoadingFeedbacks(true)
     try {
-      const response = await apiGetRatingsPage(pid, { page, size: 5 })
+      const response = await apiGetRatingsPage(pid, { page, size: 10 })
       if (response.statusCode === RESPONSE_STATUS.SUCCESS) {
         setFeedbacks(response.data?.result)
-        setFeedbacksPage(response.data?.result)
-        setPaginate(response.data)
+        setPaginate(response.data?.meta)
         setCurrentPage(page)
       }
     } catch (error) {
@@ -104,6 +106,48 @@ const ProductDetail = ({ isQuickView, data }) => {
       setIsLoadingFeedbacks(false)
     }
   }
+
+  const fetchsummarizeFeedbackByProduct = async (page = 1) => {
+    try {
+      const response = await apiSummarizeFeedbackByProduct(pid, page, 10)
+      console.log("Feedback summary response:", response)
+      setFeedbackSummary(response)
+    } catch (error) {
+      console.error("Error fetching feedback summary:", error)
+    }
+  }
+
+  // Function to load feedback data (both feedbacks and summary)
+  const loadFeedbackData = async (page = 1) => {
+    if (!pid || isQuickView) return
+    
+    setIsLoadingFeedbacks(true)
+    try {
+      await Promise.all([
+        fetchFeedbacksData(page),
+        fetchsummarizeFeedbackByProduct(page)
+      ])
+      setIsFeedbackDataLoaded(true)
+    } finally {
+      setIsLoadingFeedbacks(false)
+    }
+  }
+
+  // Function to handle tab change from ProductInfomation component
+  const handleTabChange = useCallback((tabIndex) => {
+    // If switching to review tab (tab 2) and data hasn't been loaded yet
+    if (tabIndex === 2 && !isFeedbackDataLoaded) {
+      loadFeedbackData(currentPage)
+    }
+  }, [isFeedbackDataLoaded, currentPage, pid, isQuickView])
+
+  // Function to handle page change in feedback section
+  const handleFeedbackPageChange = useCallback((page) => {
+    setCurrentPage(page)
+    if (isFeedbackDataLoaded) {
+      loadFeedbackData(page)
+    }
+  }, [isFeedbackDataLoaded])
 
   const fetchUserData = async () => {
     if (current) {
@@ -114,6 +158,13 @@ const ProductDetail = ({ isQuickView, data }) => {
   useEffect(() => {
     const fetchData = async () => {
       if (pid) {
+        // Reset product-related state when fetching new product
+        setProduct(null)
+        setProductNotFound(false)
+        setRecommendedProducts(null)
+        setQuantity(1)
+        setIsWishlisted(false)
+        
         await fetchProductData()
       }
     }
@@ -127,10 +178,10 @@ const ProductDetail = ({ isQuickView, data }) => {
   }, [product, isQuickView])
 
   useEffect(() => {
-    if (product && !isQuickView) {
-      fetchFeedbacksData(currentPage)
+    if (update && isFeedbackDataLoaded && !isQuickView) {
+      loadFeedbackData(currentPage)
     }
-  }, [product, isQuickView, currentPage, update])
+  }, [update, isFeedbackDataLoaded, isQuickView, currentPage])
 
   useEffect(() => {
     if (!isQuickView) {
@@ -154,7 +205,6 @@ const ProductDetail = ({ isQuickView, data }) => {
     fetchWishlistStatus()
   }, [pid, isLoggedIn])
 
-
   const rerender = useCallback(() => {
     setUpdate((prev) => !prev)
   }, [])
@@ -173,7 +223,14 @@ const ProductDetail = ({ isQuickView, data }) => {
       alert("Vui lòng nhập đầy đủ thông tin")
       return
     }
-    await apiRatings({ description: comment, rating: score, productId: pid, userId: uid })
+    const response = await apiRatings({ description: comment, rating: score, productId: pid, userId: uid })
+    if (response.statusCode === RESPONSE_STATUS.CREATED) {
+      message.success("Đánh giá thành công. Ý kiến của bạn sẽ được hiển thị sau một thời gian nữa")
+      setUpdate((prev) => !prev)
+    } else {
+      message.error(response.message || "Đánh giá không thành công")
+    }
+    // Cập nhật lại feedbacks
     dispatch(showModal({ isShowModal: false, modalChildren: null }))
     rerender()
   }
@@ -248,11 +305,15 @@ const ProductDetail = ({ isQuickView, data }) => {
     <div className="w-full" onClick={(e) => e.stopPropagation()}>
       {!isQuickView && (
         <div className="h-20 flex justify-center items-center bg-gray-100">
-          <div className="w-main">
+          <div className="mx-auto w-full px-4 md:w-main md:px-0">
             {!isLoadingProduct && product ? (
               <>
-                <h3 className="font-semibold">{product?.productName}</h3>
-                <Breadcrumb title={product?.productName} category={params?.category} categoryName={categoryName} />
+                <h3 className="font-semibold text-lg md:text-xl">{product.productName}</h3>
+                <Breadcrumb
+                  title={product.productName}
+                  category={params?.category}
+                  categoryName={categoryName}
+                />
               </>
             ) : (
               <BreadcrumbSkeleton />
@@ -260,173 +321,104 @@ const ProductDetail = ({ isQuickView, data }) => {
           </div>
         </div>
       )}
+
       {productNotFound ? (
         <ProductNotFound />
       ) : (
         <div
           className={clsx(
-            "m-auto mt-4 flex",
-            isQuickView ? "max-w-[900px] max-h-[80vh] bg-gray-100 rounded-lg gap-5 p-4 overflow-y-auto" : "w-main",
+            "m-auto mt-4 flex flex-col md:flex-row",
+            isQuickView
+              ? "max-w-[90vw] md:max-w-[900px] max-h-[80vh] bg-gray-100 rounded-lg gap-5 p-4 overflow-y-auto"
+              : "w-main"
           )}
         >
-          <div className={clsx("flex-4 flex flex-col gap-4 ", isQuickView ? "w-1/2" : "w-2/5")}>
+          <div
+            className={clsx(
+              "flex flex-col gap-4",
+              isQuickView
+                ? "w-full md:w-1/2"
+                : "w-full md:w-2/5"
+            )}
+          >
             {isLoadingProduct ? (
               <ProductImageSkeleton />
             ) : (
-              <div className="w-[450px]">
-                <div className="px-2">
-                  <img
-                    src={
-                      product?.imageUrl
-                      || product_default
-                    }
-                    alt="product"
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-              </div>
+              <ProductImages imageUrl={product?.imageUrl} isLoading={isLoadingProduct} />
             )}
           </div>
-          <div className={clsx("flex flex-col gap-4", isQuickView ? "w-1/2" : "w-2/5 ")}>
+
+          <div
+            className={clsx(
+              "flex flex-col gap-4 mt-6 md:mt-0",
+              isQuickView
+                ? "w-full md:w-1/2"
+                : "w-full md:w-2/5"
+            )}
+          >
             {isLoadingProduct ? (
               <ProductInfoSkeleton />
             ) : product ? (
-              <>
-                <div className="flex justify-between items-center">
-                  <h2 className="text-[30px] font-semibold">{`${formatMoney(product?.price)}đ`}</h2>
-                  <span className="text-sm text-red-500 ml-2 mt-1 pr-2">{`Có sẵn: ${product?.quantity}`}</span>
-                </div>
-                <div className="flex items-center">
-                  {Number.parseFloat(product?.rating?.toFixed(1) || 0)}
-                  {renderStarFromNumber(product?.rating || 0)?.map((el, index) => (
-                    <span key={index}>{el}</span>
-                  ))}
-                  <span className="text-sm text-red-500 ml-2 mt-1">{`Đã bán ${product?.sold || 0}`}</span>
-                </div>
-                <ul className="text-smtext-gray-500">{`Đơn vị: ${product?.unit || "Không"}`}</ul>
-                <div className="flex flex-col gap-8">
-                  {product?.quantity > 0 ? (
-                    <>
-                      <div className="flex items-center gap-4">
-                        <span>Số lượng</span>
-                        <QuantitySelector
-                          quantity={quantity}
-                          stock={product?.quantity}
-                          onIncrease={() => handleQuantityChange(quantity + 1)}
-                          onDecrease={() => handleQuantityChange(Math.max(quantity - 1, 1))}
-                          onChange={handleQuantityChange}
-                        />
-                        <Tooltip
-                          title={isWishlisted ? "Xóa khỏi danh sách yêu thích" : "Thêm vào danh sách yêu thích"}
-                          color={isWishlisted ? "#EF4444" : "#10B981"}
-                        >
-                          <span
-                            className="cursor-pointer"
-                            onClick={() => toggleWishlist(pid)}
-                          >
-                            <FaHeart size={20} color={isWishlisted ? "#EF4444" : "#10B981"} />
-                          </span>
-                        </Tooltip>
-                      </div>
-
-                      <Button fw handleOnClick={() => addToCart(product?.id, quantity)}>
-                        Thêm vào giỏ hàng
-                      </Button>
-                    </>
-                  ) : (
-                    <p className="text-red-500">Sản phẩm đang tạm hết hàng, bạn vui lòng quay lại sau nhé</p>
-                  )}
-                </div>
-              </>
+              <ProductSummary
+                product={product}
+                quantity={quantity}
+                isWishlisted={isWishlisted}
+                onQuantityChange={handleQuantityChange}
+                onAddToCart={() => addToCart(product.id, quantity)}
+                onToggleWishlist={() => toggleWishlist(pid)}
+              />
             ) : null}
           </div>
+
           {!isQuickView && (
-            <div className="flex-2 w-1/5 ml-4">
+            <div className="hidden md:block md:w-1/5 md:ml-4">
               {productExtraInfo.map((e) => (
-                <ProductExtraInfoItem key={e.id} title={e.title} sub={e.sub} icon={e.icon} />
+                <ProductExtraInfoItem
+                  key={e.id}
+                  title={e.title}
+                  sub={e.sub}
+                  icon={e.icon}
+                />
               ))}
             </div>
           )}
         </div>
       )}
+
       {!isQuickView && !productNotFound && (
         <>
-          <div className="w-main m-auto mt-8">
+          <div className="mx-auto w-full mt-8 px-4 md:w-main md:px-0">
             <ProductInfomation
               des={product?.description}
+              onTabChange={handleTabChange}
               review={
-                <div>
-                  {isLoadingFeedbacks ? (
-                    <FeedbackSkeleton />
-                  ) : (
-                    <>
-                      <div className="flex p-4">
-                        <div className="flex-4 flex flex-col items-center justify-center">
-                          <span className="font-semibold text-3xl">{`${Number.parseFloat((product?.rating || 0).toFixed(1))}/5`}</span>
-                          <span className="flex items-center gap-1">
-                            {renderStarFromNumber(product?.rating || 0)?.map((el, index) => (
-                              <span key={index}>{el}</span>
-                            ))}
-                          </span>
-                          <span>{`${feedbacks?.length || 0} đánh giá`}</span>
-                          <span className="text-gray-600 text-xs italic">
-                            Một số bình luận có thể bị ẩn do không hợp lệ
-                          </span>
-                        </div>
-                        <div className="flex-6 flex flex-col gap-2 py-8">
-                          {Array.from(Array(5).keys())
-                            .reverse()
-                            .map((el) => (
-                              <Votebar
-                                key={el}
-                                number={el + 1}
-                                ratingCount={feedbacks?.filter((i) => i.ratingStar === el + 1)?.length || 0}
-                                ratingTotal={feedbacks?.length || 0}
-                              />
-                            ))}
-                        </div>
-                      </div>
-                      <div className="p-4 flex items-center justify-center text-sm flex-col gap-2">
-                        <span>Bạn đánh giá sao sản phẩm này</span>
-                        <Button handleOnClick={handleVoteNow}>Đánh giá ngay</Button>
-                      </div>
-                      <div className="flex flex-col gap-4">
-                        {feedbacksPage?.map((el, index) => (
-                          <Comment
-                            key={index}
-                            ratingStar={el.ratingStar}
-                            content={el.description}
-                            updatedAt={el.updatedAt}
-                            name={el.userName}
-                            image={el?.userAvatarUrl}
-                          />
-                        ))}
-                      </div>
-                      {paginate?.pages > 1 && (
-                        <div>
-                          <Pagination
-                            totalPage={paginate?.pages}
-                            currentPage={paginate?.page}
-                            pageSize={paginate?.pageSize}
-                            totalProduct={paginate?.total}
-                            onPageChange={(page) => setCurrentPage(page)}
-                          />
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
+                isLoadingFeedbacks ? (
+                  <FeedbackSkeleton />
+                ) : (
+                  <ProductFeedbackSection
+                    product={product}
+                    feedbacks={feedbacks}
+                    feedbackSummary={feedbackSummary}
+                    isLoadingFeedbacks={isLoadingFeedbacks}
+                    paginate={paginate}
+                    onPageChange={handleFeedbackPageChange}
+                    onVote={handleVoteNow}
+                  />
+                )
               }
               rerender={rerender}
             />
           </div>
-          <div className="w-full flex justify-center">
-            <div className="w-main">
-              <h2 className="text-[20px] uppercase font-semibold py-2 border-b-4 border-main">Sản phẩm tương tự</h2>
+
+          <div className="w-full flex justify-center mb-4">
+            <div className="mx-auto w-full px-4 md:w-main md:px-0">
+              <h2 className="text-[20px] uppercase font-semibold py-2 border-b-4 border-main">
+                Sản phẩm tương tự
+              </h2>
               {isLoadingRecommended ? (
                 <RecommendedSkeleton />
               ) : (
-                <div className="grid grid-cols-6 gap-4 mt-4 ">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mt-4">
                   {recommendedProducts?.map((e) => (
                     <ProductCard key={e.id} productData={e} />
                   ))}
@@ -437,7 +429,6 @@ const ProductDetail = ({ isQuickView, data }) => {
         </>
       )}
     </div>
-  )
+  );
 }
-export default ProductDetail
-
+export default ProductDetail;

@@ -26,7 +26,7 @@ const EditProductForm = ({ initialProductData }) => {
       )
       form.setFieldsValue({
         id: initialProductData?.id,
-        productName: initialProductData?.product_name || initialProductData?.productName,
+        productName: initialProductData?.productName,
         price: initialProductData?.price,
         quantity: initialProductData?.quantity,
         description: initialProductData?.description,
@@ -134,7 +134,7 @@ const EditProductForm = ({ initialProductData }) => {
         onFinish={handleUpdateProduct}
         initialValues={{
           id: productData?.id,
-          productName: productData?.product_name || productData?.productName,
+          productName: productData?.productName,
           price: productData?.price,
           quantity: productData?.quantity,
           description: productData?.description,

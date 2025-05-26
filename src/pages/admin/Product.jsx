@@ -162,15 +162,15 @@ const Product = () => {
             record.imageUrl
             || product_default
           }
-          alt={record.product_name || "Product Image"}
+          alt={record.productName || "Product Image"}
           style={{ width: "90px", height: "70px", objectFit: "cover" }}
         />
       ),
     },
     {
       title: "Tên sản phẩm",
-      dataIndex: "product_name",
-      key: "product_name",
+      dataIndex: "productName",
+      key: "productName",
     },
     {
       title: "Giá",
@@ -209,7 +209,7 @@ const Product = () => {
         <Button
           type="link"
           onClick={() =>
-            handleShowMessage(record.description, record.product_name)
+            handleShowMessage(record.description, record.productName)
           }
         >
           Xem mô tả
@@ -240,13 +240,12 @@ const Product = () => {
   ];
 
   return (
-    <div className="w-full pr-3 relative">
-      <div className="flex-auto justify-center mb-5 ">
+    <div className="w-full p-4 sm:p-6 lg:p-8">
+      <div className="flex justify-center mb-5">
         <SearchProduct onSearch={handleSearch} />
       </div>
-      <div className="flex items-center gap-4"></div>
-      <div className="flex justify-between mb-2">
-        <div className="w-1/4">
+      <div className="flex flex-col sm:flex-row justify-between gap-4 mb-5"></div>
+      <div className="w-full sm:w-1/4">
           <div>
             Phân loại:
             <CategoryComboBox
@@ -262,10 +261,9 @@ const Product = () => {
               }}
               search={true}
             />
-          </div>
         </div>
 
-        <div className="w-1/4">
+        <div className="w-full mt-2">
           <SortItem
             sortOption={sortOption}
             setSortOption={handleSortChange}
@@ -273,6 +271,7 @@ const Product = () => {
           />
         </div>
       </div>
+      <div className="overflow-x-auto">
       <Table
         dataSource={products?.data?.result}
         columns={columns}
@@ -286,6 +285,7 @@ const Product = () => {
           showSizeChanger: false
         }}
       />
+      </div>
       <Modal
         title="Xác nhận xóa sản phẩm"
         open={showDeleteMessage}
@@ -320,10 +320,10 @@ const Product = () => {
         <p>{messageContent}</p>
       </Modal>
 
-      <div>
+     <div className="mt-4 text-center">
         <AddButton
           buttonName="+ Thêm sản phẩm mới"
-          buttonClassName="bg-green-500 hover:bg-green-700"
+          buttonClassName="bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded-md"
           toLink="add"
         />
       </div>
