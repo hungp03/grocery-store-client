@@ -1,12 +1,15 @@
 import { useRef, useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
+import { useDispatch } from "react-redux"
 import { Button, Input, Modal, message } from "antd"
 import { apiRequestDeactivateAccount, apiDeactivateAccount } from "@/apis"
 import path from "@/utils/path"
 import { RESPONSE_STATUS } from "@/utils/responseStatus"
+import { logout } from "@/store/user/userSlice"
 
 export default function OtpVerificationModal({ open, onClose }) {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
   const [otp, setOtp] = useState(["", "", "", "", "", ""])
   const [step, setStep] = useState("confirmation")
@@ -55,18 +58,18 @@ export default function OtpVerificationModal({ open, onClose }) {
     const response = await apiDeactivateAccount({ otpCode: otpValue })
 
     if (response.statusCode === RESPONSE_STATUS.SUCCESS) {
-      message.success("Xác thực OTP thành công")
+      message.success("Thao tác thành công")
       setOtp(["", "", "", "", "", ""])
       setStep("confirmation")
       onClose()
+      dispatch(logout())
       setTimeout(() => {
-        navigate(path.HOME)
+        navigate(path.LOGIN)
       }, 1000)
     } else {
       message.error(response.message || "Có lỗi xảy ra khi xác thực OTP")
       setOtp(["", "", "", "", "", ""])
     }
-
     setLoading(false)
   }
 

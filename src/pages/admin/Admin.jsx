@@ -52,7 +52,7 @@ const Admin = () => {
           <Route path={path.ADMIN_CATEGORY} element={<Category />}></Route>
           <Route path={path.ADMIN_EDIT_CATEGORY} element={<EditCategory />}></Route>
           <Route path={path.ADD_CATEGORY} element={<AddCategory />}></Route>
-          <Route path={path.FEEDBACK} element={<Feedback />}></Route>
+          <Route path={path.ADMIN_FEEDBACK} element={<Feedback />}></Route>
           <Route path={path.ADMIN_ORDER} element={<Order />}></Route>
           <Route path={path.ADMIN_ORDER_DETAIL} element={<OrderDetail />}></Route>
           <Route path={path.ADMIN_USER} element={<User />}></Route>

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { setExpiredMessage, login } from '@/store/user/userSlice';
+import { setExpiredMessage, login, logout } from '@/store/user/userSlice';
 import { store } from '@/store/redux';
 
 // Create a singleton promise to handle token refresh
@@ -30,10 +30,6 @@ const getLocalToken = () => {
 
 const saveToken = (newToken) => {
   try {
-    let localDataString = localStorage.getItem('persist:ogani_shop/user');
-    let localData = localDataString ? JSON.parse(localDataString) : {};
-    localData.token = JSON.stringify(newToken);
-    localStorage.setItem('persist:ogani_shop/user', JSON.stringify(localData));
     store.dispatch(login({ isLoggedIn: true, token: newToken }));
   } catch (error) {
     console.error('Error saving token:', error);
@@ -126,9 +122,9 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config;
     const resData = error.response?.data;
     if (error.response?.status === 403 && resData?.statusCode === -4) {
-      localStorage.removeItem('persist:ogani_shop/user');
+      store.dispatch(logout());
       store.dispatch(setExpiredMessage());
-      return Promise.reject(new Error('Tài khoản đã bị khóa'));
+      return Promise.reject(new Error('Tài khoản đã bị vô hiệu hóa'));
     }
 
     // handle lỗi 401 (Unauthorized) - Token hết hạn
@@ -136,7 +132,7 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
       // Không thấy người dùng hợp lệ, xóa token
       if (!store.getState().user.isLoggedIn || !store.getState().user.current) {
-        localStorage.removeItem('persist:ogani_shop/user');
+        store.dispatch(logout());
         return Promise.reject(error);
       }
 
@@ -150,7 +146,7 @@ axiosInstance.interceptors.response.use(
         }
       } catch (err) {
         // Nếu refresh token thất bại, xóa token và dispatch action
-        localStorage.removeItem('persist:ogani_shop/user');
+        store.dispatch(logout());
         store.dispatch(setExpiredMessage());
         console.error('Failed to refresh token:', err);
       }

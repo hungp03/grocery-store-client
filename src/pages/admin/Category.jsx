@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import { MdDelete, MdModeEdit } from "react-icons/md";
 import { message, Button, Modal, Table } from 'antd';
 import { apiDeleteCategory, apiGetCategories } from "@/apis";
@@ -10,7 +9,6 @@ import { RESPONSE_STATUS } from "@/utils/responseStatus";
 const PAGE_SIZE = 10;
 
 const Category = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const [currentPage, setCurrentPage] = useState(Number(params.get('page')) || 1);

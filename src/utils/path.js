@@ -43,8 +43,6 @@ const path = {
 
   ADD_PRODUCT: "product/add",
   ADD_CATEGORY: "category/add",
-  // ADMIN_
-  FEEDBACK: "feedback"
 };
 
 

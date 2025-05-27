@@ -41,6 +41,7 @@ const Login = () => {
       }
     } else {
       const result = await apiLogin(data);
+      console.log(result);
       setLoading(false);
       if (result.statusCode === RESPONSE_STATUS.SUCCESS) {
         dispatch(login({ isLoggedIn: true, token: result.data.accessToken, userData: result.data.user }));
@@ -69,10 +70,9 @@ const Login = () => {
           navigate(`/${path.HOME}`);
         }, 1000);
       } else {
-        throw new Error(result.message);
+        console.log(result);
+        Swal.fire('Oops!', result.message, 'error');
       }
-    } catch (err) {
-      Swal.fire('Oops!', err.message, 'error');
     } finally {
       setLoading(false);
     }
