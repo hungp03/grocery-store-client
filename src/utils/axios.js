@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { setExpiredMessage, login, logout } from '@/store/user/userSlice';
 import { store } from '@/store/redux';
+import { RESPONSE_STATUS } from './responseStatus';
 
 // Create a singleton promise to handle token refresh
 let refreshTokenPromise = null;
@@ -121,7 +122,7 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     const resData = error.response?.data;
-    if (error.response?.status === 403 && resData?.statusCode === -10) {
+    if (error.response?.status === 403 && resData?.statusCode === RESPONSE_STATUS.ACCESS_DENIED) {
       store.dispatch(logout());
       store.dispatch(setExpiredMessage());
       return Promise.reject(new Error('Tài khoản đã bị vô hiệu hóa'));
