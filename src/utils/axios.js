@@ -121,7 +121,7 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     const resData = error.response?.data;
-    if (error.response?.status === 403 && resData?.statusCode === -4) {
+    if (error.response?.status === 403 && resData?.statusCode === -10) {
       store.dispatch(logout());
       store.dispatch(setExpiredMessage());
       return Promise.reject(new Error('Tài khoản đã bị vô hiệu hóa'));
