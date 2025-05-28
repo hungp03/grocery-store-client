@@ -123,7 +123,6 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config;
     if (error.response?.status === 403 && error.response?.data?.statusCode === RESPONSE_STATUS.ACCESS_DENIED) {
       store.dispatch(logout());
-      store.dispatch(setExpiredMessage());
       return error.response.data || Promise.reject(new Error('Tài khoản đã bị vô hiệu hóa'));
     }
 
