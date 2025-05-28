@@ -70,7 +70,6 @@ const Login = () => {
           navigate(`/${path.HOME}`);
         }, 1000);
       } else {
-        console.log(result);
         Swal.fire('Oops!', result.message, 'error');
       }
     } finally {

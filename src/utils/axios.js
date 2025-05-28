@@ -121,11 +121,10 @@ axiosInstance.interceptors.response.use(
   (response) => response.data,
   async (error) => {
     const originalRequest = error.config;
-    const resData = error.response?.data;
-    if (error.response?.status === 403 && resData?.statusCode === RESPONSE_STATUS.ACCESS_DENIED) {
+    if (error.response?.status === 403 && error.response?.data?.statusCode === RESPONSE_STATUS.ACCESS_DENIED) {
       store.dispatch(logout());
       store.dispatch(setExpiredMessage());
-      return Promise.reject(new Error('Tài khoản đã bị vô hiệu hóa'));
+      return error.response.data || Promise.reject(new Error('Tài khoản đã bị vô hiệu hóa'));
     }
 
     // handle lỗi 401 (Unauthorized) - Token hết hạn
