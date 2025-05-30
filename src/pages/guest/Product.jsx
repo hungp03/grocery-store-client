@@ -165,7 +165,7 @@ const Product = () => {
         </div>
       </div>
 
-      <div className="px-4 md:px-0 md:w-main md:mx-auto border p-4 mt-6">
+      <div className="px-4 md:px-0 md:w-main md:mx-auto mt-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
             <span className="font-semibold text-sm">Lọc:</span>

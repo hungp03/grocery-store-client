@@ -29,12 +29,12 @@ const ProductDetail = ({ isQuickView, data }) => {
   const [pid, setPid] = useState(null)
   const [productNotFound, setProductNotFound] = useState(false)
   const [isWishlisted, setIsWishlisted] = useState(false)
-  
+
   // Add loading states
   const [isLoadingProduct, setIsLoadingProduct] = useState(false)
   const [isLoadingRecommended, setIsLoadingRecommended] = useState(false)
   const [isLoadingFeedbacks, setIsLoadingFeedbacks] = useState(false)
-  
+
   // Add state to track if feedback data has been loaded
   const [isFeedbackDataLoaded, setIsFeedbackDataLoaded] = useState(false)
 
@@ -110,8 +110,7 @@ const ProductDetail = ({ isQuickView, data }) => {
   const fetchsummarizeFeedbackByProduct = async (page = 1) => {
     try {
       const response = await apiSummarizeFeedbackByProduct(pid, page, 10)
-      console.log("Feedback summary response:", response)
-      setFeedbackSummary(response)
+      setFeedbackSummary(response || "AI tạm thời không phản hồi")
     } catch (error) {
       console.error("Error fetching feedback summary:", error)
     }
@@ -120,7 +119,7 @@ const ProductDetail = ({ isQuickView, data }) => {
   // Function to load feedback data (both feedbacks and summary)
   const loadFeedbackData = async (page = 1) => {
     if (!pid || isQuickView) return
-    
+
     setIsLoadingFeedbacks(true)
     try {
       await Promise.all([
@@ -164,7 +163,7 @@ const ProductDetail = ({ isQuickView, data }) => {
         setRecommendedProducts(null)
         setQuantity(1)
         setIsWishlisted(false)
-        
+
         await fetchProductData()
       }
     }

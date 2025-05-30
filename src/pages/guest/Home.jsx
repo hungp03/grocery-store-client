@@ -13,29 +13,35 @@ const Home = () => {
         }
     }, [isLoggedIn]);
 
-    return (
+   return (
         <>
-            <div className="container mx-auto px-4 pt-6">
-                <div className="flex flex-col md:flex-row items-stretch gap-6">
-                    <aside className="w-full md:w-1/4 flex-shrink-0">
-                        <Sidebar />
-                    </aside>
-                    <main className="w-full md:w-3/4">
-                        <Banner />
-                    </main>
+           <div className="w-full flex justify-center px-4 pt-6">
+                <div className="w-full max-w-screen-xl lg:w-main">
+                    <div className="flex flex-col md:flex-row items-stretch gap-6">
+                        <aside className="md:w-1/4 flex-shrink-0">
+                            <Sidebar />
+                        </aside>
+                        <main className="md:w-3/4">
+                            <Banner />
+                        </main>
+                    </div>
                 </div>
             </div>
 
-            <div className="w-full bg-gray-50 py-8">
-                <div className="px-4 lg:px-24">
-                    <FeatureProduct flag="new" />
+          <div className="w-full bg-gray-50 py-8">
+                <div className="w-full flex justify-center px-4">
+                    <div className="w-full max-w-screen-xl lg:w-main">
+                        <FeatureProduct flag="new" />
+                    </div>
                 </div>
             </div>
 
             {showRec && (
                 <div className="w-full bg-white py-8">
-                    <div className="px-4 lg:px-24">
-                        <FeatureProduct flag="recommendation" />
+                    <div className="w-full flex justify-center px-4">
+                        <div className="w-full max-w-screen-xl lg:w-main">
+                            <FeatureProduct flag="recommendation" />
+                        </div>
                     </div>
                 </div>
             )}
