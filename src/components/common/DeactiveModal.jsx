@@ -64,7 +64,7 @@ export default function OtpVerificationModal({ open, onClose }) {
       onClose()
       dispatch(logout())
       setTimeout(() => {
-        navigate(path.LOGIN)
+        navigate(`/${path.LOGIN}`);
       }, 1000)
     } else {
       message.error(response.message || "Có lỗi xảy ra khi xác thực OTP")
