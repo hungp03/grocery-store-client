@@ -3,7 +3,6 @@ import { Tooltip } from "antd"
 import { formatMoney, renderStarFromNumber } from "@/utils/helper"
 import { QuantitySelector, Button } from "@/components"
 import icons from "@/utils/icons"
-import { tr } from 'date-fns/locale'
 const { FaHeart } = icons
 
 const ProductSummary = ({
@@ -42,10 +41,11 @@ const ProductSummary = ({
             <div className="text-sm text-gray-500">
                 Đơn vị: {product?.unit || "Không"}
             </div>
+            
             <div className="flex flex-col gap-4">
-                {inStock ? (
-                    <>
-                        <div className="flex flex-wrap items-center gap-4">
+                <div className="flex flex-wrap items-center gap-4">
+                    {inStock && (
+                        <>
                             <span>Số lượng</span>
                             <QuantitySelector
                                 quantity={quantity}
@@ -54,32 +54,35 @@ const ProductSummary = ({
                                 onDecrease={() => onQuantityChange(Math.max(quantity - 1, 1))}
                                 onChange={onQuantityChange}
                             />
-                            <Tooltip
-                                title={
-                                    isWishlisted
-                                        ? "Xóa khỏi danh sách yêu thích"
-                                        : "Thêm vào danh sách yêu thích"
-                                }
-                                color={isWishlisted ? "#EF4444" : "#10B981"}
-                            >
-                                <span
-                                    className="cursor-pointer"
-                                    onClick={onToggleWishlist}
-                                >
-                                    <FaHeart
-                                        size={20}
-                                        color={isWishlisted ? "#EF4444" : "#10B981"}
-                                    />
-                                </span>
-                            </Tooltip>
-                        </div>
-                        <Button
-                            className="md:w-full"
-                            handleOnClick={onAddToCart}
+                        </>
+                    )}
+                    <Tooltip
+                        title={
+                            isWishlisted
+                                ? "Xóa khỏi danh sách yêu thích"
+                                : "Thêm vào danh sách yêu thích"
+                        }
+                        color={isWishlisted ? "#EF4444" : "#10B981"}
+                    >
+                        <span
+                            className="cursor-pointer"
+                            onClick={onToggleWishlist}
                         >
-                            Thêm vào giỏ
-                        </Button>
-                    </>
+                            <FaHeart
+                                size={20}
+                                color={isWishlisted ? "#EF4444" : "#10B981"}
+                            />
+                        </span>
+                    </Tooltip>
+                </div>
+                
+                {inStock ? (
+                    <Button
+                        className="md:w-full"
+                        handleOnClick={onAddToCart}
+                    >
+                        Thêm vào giỏ
+                    </Button>
                 ) : (
                     <p className="text-red-500">
                         Sản phẩm đang tạm hết hàng, bạn vui lòng quay lại sau nhé
