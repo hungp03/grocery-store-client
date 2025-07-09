@@ -66,10 +66,14 @@ const User = () => {
       render: (avatarUrl) => (
         <Image
           width={50}
+          height={50}
+          style={{
+            borderRadius: '50%', 
+            objectFit: 'cover',
+          }}
           src={avatarUrl || avatarDefault}
           fallback={avatarDefault}
           alt="Avatar"
-          style={{borderRadius: '50%'}}
         />
       ),
     },
